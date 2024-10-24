@@ -1,1 +1,2 @@
 # MiniProject-DocPortal
+The Doctor-Patient Portal originated as part of healthcare's shift toward digitization, aimed at improving patient care and streamlining medical processes. Initially, manual systems were used for appointments and record-keeping, causing delays and Inefficiencies. With the rise of secure online platforms, portals began offering features like appointment scheduling, access to medical records, and prescription management.
