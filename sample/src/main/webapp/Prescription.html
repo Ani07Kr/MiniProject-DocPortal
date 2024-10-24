@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prescription Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('images/DC3.jpg'); /* Replace with your background image path */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .container {
+            width: 70%;
+            margin: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.3); /* Semi-transparent white background */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            color: #304931;
+            border-bottom: 2px solid #304931;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        input[type="submit"] {
+            background-color: #304931;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .form-container {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prescription Management</h1>
+
+        <div class="form-container">
+            <h2>Write Prescription</h2>
+            <form action="PrescriptionServlet" method="post">
+                <input type="hidden" name="action" value="write">
+                <div class="form-group">
+                    <label for="doctorName">Doctor Name:</label>
+                    <input type="text" id="doctorName" name="doctorName" required>
+                </div>
+                <div class="form-group">
+                    <label for="patientId">Patient ID:</label>
+                    <input type="text" id="patientId" name="patientId" required>
+                </div>
+                <div class="form-group">
+                    <label for="prescription">Prescription Details:</label>
+                    <textarea id="prescription" name="prescription" rows="4" required></textarea>
+                </div>
+                <input type="submit" value="Submit Prescription">
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h2>Fetch Prescription</h2>
+            <form action="PrescriptionServlet" method="post">
+                <input type="hidden" name="action" value="fetch">
+                <div class="form-group">
+                    <label for="fetchPatientId">Patient ID:</label>
+                    <input type="text" id="fetchPatientId" name="fetchPatientId" required>
+                </div>
+                <input type="submit" value="Fetch Prescription">
+            </form>
+        </div>
+
+        <a href="dashboard.html">Home</a>
+    </div>
+</body>
+</html>

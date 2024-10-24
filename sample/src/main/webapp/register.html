@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <style>
+        body {
+            background-image: url('images/Sign.jpg'); /* Matching the background image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        /* Optional overlay to darken the background for better text readability */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.2); /* Transparent background */
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Stronger shadow for depth */
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px); /* Adds a blur effect behind the container */
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #fff; /* Changed to white for better contrast */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff; /* Changed to white for better contrast */
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.6); /* Lighter border for subtlety */
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2); /* Transparent input background */
+            color: #fff; /* White text inside input */
+            box-sizing: border-box;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7); /* Subtle placeholder color */
+        }
+
+        .form-group input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-group input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Registration Page</h2>
+        <form action="RegisterServlet" method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="t1" required placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="t2" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="t3" required placeholder="Enter your password">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="t4" required placeholder="Confirm your password">
+            </div>
+            <div class="form-group">
+                <label for="role">Select Role:</label>
+                <select id="role" name="role" required>
+                    <option value="Patient">Patient</option>
+                    <option value="Doctor">Doctor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Register">
+            </div>
+        </form>
+        <div class="form-footer">
+            <p>Already have an account? <a href="Login.html">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>

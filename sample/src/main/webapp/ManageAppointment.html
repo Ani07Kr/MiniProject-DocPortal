@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Appointment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('images/Dc2.jpg'); /* Add your background image here */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .container {
+            width: 70%;
+            margin: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .radio-group {
+            margin-bottom: 20px;
+        }
+        .radio-group label {
+            display: inline;
+            margin-right: 20px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            var action = document.querySelector('input[name="action"]:checked').value;
+            var appointmentId = document.getElementById("appointmentId").value;
+            var doctorName = document.getElementById("doctorName").value;
+            var patientId = document.getElementById("patientId").value;
+            var patientName = document.getElementById("patientName").value;
+            var appointmentDate = document.getElementById("appointmentDate").value;
+
+            if (action === "book" || action === "update") {
+                if (!doctorName || !patientId || !patientName || !appointmentDate) {
+                    alert("Please fill out all fields.");
+                    return false;
+                }
+            } else if (action === "cancel") {
+                if (!appointmentId) {
+                    alert("Please enter the appointment ID to cancel.");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function updateFormFields() {
+            var action = document.querySelector('input[name="action"]:checked').value;
+            var appointmentIdField = document.getElementById("appointmentId");
+            var doctorNameField = document.getElementById("doctorName");
+            var patientIdField = document.getElementById("patientId");
+            var patientNameField = document.getElementById("patientName");
+            var appointmentDateField = document.getElementById("appointmentDate");
+
+            if (action === "cancel") {
+                appointmentIdField.removeAttribute("readonly");
+                doctorNameField.style.display = "none";
+                patientIdField.style.display = "none";
+                patientNameField.style.display = "none";
+                appointmentDateField.style.display = "none";
+            } else {
+                appointmentIdField.removeAttribute("readonly"); // Allow editing in update mode
+                doctorNameField.style.display = "block";
+                patientIdField.style.display = "block";
+                patientNameField.style.display = "block";
+                appointmentDateField.style.display = "block";
+
+                if (action === "book") {
+                    generateAppointmentId();
+                    appointmentIdField.setAttribute("readonly", true); // Keep readonly for booking
+                }
+            }
+        }
+
+        function generateAppointmentId() {
+            // Simulate generating a new appointment ID
+            document.getElementById("appointmentId").value = "APPT" + Math.floor(Math.random() * 10000);
+        }
+
+        window.onload = function() {
+            updateFormFields();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Appointment</h1>
+        <form action="ManageAppointmentServlet" method="post" onsubmit="return validateForm();">
+            <div class="radio-group">
+                <label><input type="radio" name="action" value="book" checked onclick="updateFormFields()"> Book Appointment</label>
+                <label><input type="radio" name="action" value="update" onclick="updateFormFields()"> Update Appointment</label>
+                <label><input type="radio" name="action" value="cancel" onclick="updateFormFields()"> Cancel Appointment</label>
+            </div>
+
+            <div class="form-group">
+                <label for="appointmentId">Appointment ID:</label>
+                <input type="text" id="appointmentId" name="appointmentId">
+            </div>
+
+            <div class="form-group">
+                <label for="doctorName">Doctor Name:</label>
+                <input type="text" id="doctorName" name="doctorName">
+            </div>
+
+            <div class="form-group">
+                <label for="patientId">Patient Ph.no:</label>
+                <input type="text" id="patientId" name="patientId">
+            </div>
+
+            <div class="form-group">
+                <label for="patientName">Patient Name:</label>
+                <input type="text" id="patientName" name="patientName">
+            </div>
+
+            <div class="form-group">
+                <label for="appointmentDate">Appointment Date:</label>
+                <input type="date" id="appointmentDate" name="appointmentDate">
+            </div>
+
+            <input type="submit" value="Submit">
+        </form>
+        <p><a href="dashboard.html">Go to Dashboard</a></p>
+    </div>
+</body>
+</html>
