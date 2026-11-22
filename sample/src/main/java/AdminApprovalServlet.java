@@ -48,23 +48,26 @@ public class AdminApprovalServlet extends HttpServlet {
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
 
-            out.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Admin - Doctor Authorization</title><style>"
-                + "body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 30px; display: flex; justify-content: center; }"
-                + ".container { width: 100%; max-width: 900px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 30px; box-sizing: border-box; }"
-                + "h1 { color: #1e3a5f; margin-top: 0; font-size: 24px; text-align: center; margin-bottom: 25px; }"
-                + "table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px; }"
+            out.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=5.0'><title>Admin - Doctor Authorization</title><style>"
+                + "*, *::before, *::after { box-sizing: border-box; }"
+                + "body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px 14px; display: flex; justify-content: center; min-height: 100vh; }"
+                + ".container { width: 100%; max-width: 950px; background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: clamp(20px, 4vw, 32px); margin: auto; }"
+                + "h1 { color: #0f172a; margin-top: 0; font-size: clamp(1.25rem, 4vw, 1.6rem); text-align: center; margin-bottom: 20px; font-weight: 800; }"
+                + ".table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 25px; border-radius: 8px; border: 1px solid #e2e8f0; }"
+                + "table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }"
                 + "th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e0e0e0; }"
-                + "th { background: #1e3a5f; color: #fff; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }"
-                + "tr:hover { background-color: #f9fafb; }"
-                + ".badge-pending { background: #fff3e0; color: #e65100; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 12px; border: 1px solid #ffe0b2; }"
-                + ".badge-approved { background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 12px; border: 1px solid #c8e6c9; }"
-                + ".btn-approve { background: #2e7d32; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; transition: background 0.2s; }"
-                + ".btn-approve:hover { background: #1b5e20; }"
-                + ".btn-back { display: inline-block; padding: 10px 20px; background: #1e3a5f; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; }"
-                + ".btn-back:hover { background: #0d47a1; }"
-                + ".no-pending { text-align: center; padding: 20px; color: #666; font-style: italic; }"
+                + "th { background: #0f172a; color: #fff; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }"
+                + "tr:hover { background-color: #f8fafc; }"
+                + ".badge-pending { background: #fff3e0; color: #e65100; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 12px; border: 1px solid #ffe0b2; display: inline-block; }"
+                + ".badge-approved { background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 12px; border: 1px solid #c8e6c9; display: inline-block; }"
+                + ".btn-approve { background: #16a34a; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; transition: background 0.2s; white-space: nowrap; }"
+                + ".btn-approve:hover { background: #15803d; }"
+                + ".btn-back { display: inline-flex; align-items: center; justify-content: center; padding: 11px 22px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; min-height: 42px; }"
+                + ".btn-back:hover { background: #0369a1; }"
+                + ".no-pending { text-align: center; padding: 20px; color: #64748b; font-style: italic; }"
                 + "</style></head><body><div class='container'>"
-                + "<h1>🛡️ Doctor Credential Verification & Authorization</h1>"
+                + "<h1>🛡️ Doctor Verification & Authorization</h1>"
+                + "<div class='table-responsive'>"
                 + "<table><thead><tr>"
                 + "<th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Registration Date</th><th>Action</th>"
                 + "</tr></thead><tbody>"
@@ -105,7 +108,7 @@ public class AdminApprovalServlet extends HttpServlet {
                 out.println("<tr><td colspan='6' class='no-pending'>No registered doctors found.</td></tr>");
             }
 
-            out.println("</tbody></table>");
+            out.println("</tbody></table></div>");
             out.println("<div style='text-align:center;'><a href='dashboard.html' class='btn-back'>← Return to Dashboard</a></div>");
             out.println("</div></body></html>");
 

@@ -139,14 +139,14 @@ public class ManageAppointmentServlet extends HttpServlet {
                                     .append("<p><strong>Allotted 30-Min Window:</strong> ").append(escapeHtml(timeSlot)).append("</p>")
                                     .append("<p><strong>Queue Rule:</strong> You hold position <strong>#").append(slotToken).append("</strong> out of max 3 patients in this 30-minute block.</p>")
                                     .append("</div>")
-                                    .append("<p style='text-align:center;'>")
-                                    .append("<a href='downloadSlip?appointmentId=").append(escapeHtml(appointmentId)).append("' class='btn'>📥 Download Appointment Slip</a> ")
-                                    .append("<a href='ManageAppointment.html' class='btn secondary'>New Booking</a> ")
+                                    .append("<div class='action-group'>")
+                                    .append("<a href='downloadSlip?appointmentId=").append(escapeHtml(appointmentId)).append("' class='btn'>📥 Download Slip</a>")
+                                    .append("<a href='ManageAppointment.html' class='btn secondary'>New Booking</a>")
                                     .append("<a href='dashboard.html' class='btn secondary'>Dashboard</a>")
-                                    .append("</p>");
+                                    .append("</div>");
                             } else {
                                 body.append("<div class='alert error'>Failed to book appointment. Please try again.</div>")
-                                    .append("<p style='text-align:center;'><a href='ManageAppointment.html' class='btn'>Back</a></p>");
+                                    .append("<div class='action-group'><a href='ManageAppointment.html' class='btn'>Back</a></div>");
                             }
                         }
                     }
@@ -167,7 +167,7 @@ public class ManageAppointmentServlet extends HttpServlet {
                 } else {
                     body.append("<div class='alert error'>Failed to update appointment. Please check if Appointment ID is correct.</div>");
                 }
-                body.append("<p style='text-align:center;'><a href='ManageAppointment.html' class='btn'>Back</a> <a href='dashboard.html' class='btn secondary'>Dashboard</a></p>");
+                body.append("<div class='action-group'><a href='ManageAppointment.html' class='btn'>Back</a><a href='dashboard.html' class='btn secondary'>Dashboard</a></div>");
             } else if ("cancel".equals(action)) {
                 if (appointmentId == null || appointmentId.trim().isEmpty()) {
                     body.append("<div class='alert error'>Please provide a valid Appointment ID.</div>");
@@ -183,7 +183,7 @@ public class ManageAppointmentServlet extends HttpServlet {
                         body.append("<div class='alert error'>Failed to cancel appointment. Appointment ID not found.</div>");
                     }
                 }
-                body.append("<p style='text-align:center;'><a href='ManageAppointment.html' class='btn'>Back</a> <a href='dashboard.html' class='btn secondary'>Dashboard</a></p>");
+                body.append("<div class='action-group'><a href='ManageAppointment.html' class='btn'>Back</a><a href='dashboard.html' class='btn secondary'>Dashboard</a></div>");
             }
 
             renderHtml(out, title, body.toString());
@@ -206,23 +206,25 @@ public class ManageAppointmentServlet extends HttpServlet {
     }
 
     private void renderHtml(PrintWriter out, String title, String bodyContent) {
-        out.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + title + "</title><style>"
-            + "body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-image: url('images/Dc2.jpg'); background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; display: flex; justify-content: center; align-items: center; box-sizing: border-box; padding: 20px; }"
-            + ".card { width: 100%; max-width: 650px; background: rgba(255, 255, 255, 0.95); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.22); padding: 30px 35px; box-sizing: border-box; backdrop-filter: blur(6px); }"
-            + "h1 { text-align: center; color: #1e3a5f; margin-top: 0; margin-bottom: 20px; font-size: 24px; }"
-            + ".alert { padding: 14px 18px; border-radius: 6px; margin-bottom: 20px; font-size: 15px; }"
-            + ".alert.success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }"
-            + ".alert.error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }"
-            + ".token-badge { background: linear-gradient(135deg, #1e3a5f, #0d47a1); color: #fff; border-radius: 10px; padding: 18px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(13, 71, 161, 0.3); }"
-            + ".token-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9; }"
-            + ".token-number { font-size: 38px; font-weight: 900; margin: 6px 0; color: #ffeb3b; letter-spacing: 1px; }"
+        out.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=5.0'><title>" + title + "</title><style>"
+            + "*, *::before, *::after { box-sizing: border-box; }"
+            + "body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px 14px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(13, 148, 136, 0.65)), url('images/Dc2.jpg'); background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; display: flex; justify-content: center; align-items: center; }"
+            + ".card { width: 100%; max-width: 650px; background: rgba(255, 255, 255, 0.98); border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.35); padding: clamp(20px, 4vw, 36px); backdrop-filter: blur(8px); }"
+            + "h1 { text-align: center; color: #0f172a; margin-top: 0; margin-bottom: 20px; font-size: clamp(1.3rem, 4vw, 1.6rem); }"
+            + ".alert { padding: 14px 18px; border-radius: 10px; margin-bottom: 20px; font-size: 15px; line-height: 1.5; }"
+            + ".alert.success { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }"
+            + ".alert.error { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }"
+            + ".token-badge { background: linear-gradient(135deg, #0284c7, #0d9488); color: #fff; border-radius: 12px; padding: 18px 14px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35); }"
+            + ".token-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9; font-weight: 700; }"
+            + ".token-number { font-size: clamp(28px, 6vw, 38px); font-weight: 900; margin: 6px 0; color: #fef08a; letter-spacing: 1px; }"
             + ".token-note { font-size: 13px; opacity: 0.95; }"
-            + ".info-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 18px; margin-bottom: 20px; font-size: 15px; }"
-            + ".info-box p { margin: 8px 0; color: #333; }"
-            + ".btn { display: inline-block; padding: 10px 20px; background-color: #2e7d32; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; margin: 4px; transition: background 0.2s; }"
-            + ".btn:hover { background-color: #1b5e20; }"
-            + ".btn.secondary { background-color: #007bff; }"
-            + ".btn.secondary:hover { background-color: #0056b3; }"
+            + ".info-box { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 20px; font-size: 15px; }"
+            + ".info-box p { margin: 8px 0; color: #334155; word-break: break-word; }"
+            + ".action-group { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }"
+            + ".btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; background-color: #0284c7; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 14px; transition: all 0.2s; min-height: 44px; text-align: center; flex: 1 1 180px; }"
+            + ".btn:hover { background-color: #0369a1; transform: translateY(-2px); }"
+            + ".btn.secondary { background-color: #0d9488; }"
+            + ".btn.secondary:hover { background-color: #0f766e; }"
             + "</style></head><body><div class='card'>"
             + "<h1>Appointment Confirmation</h1>"
             + bodyContent

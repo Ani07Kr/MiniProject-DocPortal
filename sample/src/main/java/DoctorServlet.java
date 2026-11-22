@@ -131,31 +131,35 @@ public class DoctorServlet extends HttpServlet {
                 pstmt = conn.prepareStatement(query);
                 rs = pstmt.executeQuery();
 
-                out.println("<html><head><title>Doctors List</title><style>"
-                    + "body { background-image: url('images/Dr.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; font-family: Arial, sans-serif; margin: 0; padding: 0; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; }"
-                    + "body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: -1; }"
-                    + ".container { background: rgba(255, 255, 255, 0.2); border-radius: 10px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); padding: 30px; max-width: 800px; width: 90%; position: relative; z-index: 1; backdrop-filter: blur(10px); }"
-                    + "h1 { color: #fff; }"
-                    + "table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }"
-                    + "table th, table td { padding: 10px; border: 1px solid rgba(255, 255, 255, 0.6); color: #fff; }"
-                    + "table th { background: rgba(255, 255, 255, 0.3); }"
-                    + ".button { display: inline-block; padding: 10px 20px; color: #fff; background-color: #007bff; border: none; border-radius: 4px; text-decoration: none; }"
-                    + ".button:hover { background-color: #0056b3; }"
+                out.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=5.0'><title>Doctors List</title><style>"
+                    + "*, *::before, *::after { box-sizing: border-box; }"
+                    + "body { background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(13, 148, 136, 0.65)), url('images/Dr.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px 14px; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }"
+                    + ".container { background: rgba(255, 255, 255, 0.98); border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35); padding: clamp(20px, 4vw, 36px); max-width: 800px; width: 100%; position: relative; z-index: 1; }"
+                    + "h1 { color: #0f172a; margin-top: 0; margin-bottom: 20px; font-size: clamp(1.3rem, 4vw, 1.7rem); text-align: center; font-weight: 800; }"
+                    + ".table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }"
+                    + "table { width: 100%; border-collapse: collapse; min-width: 500px; }"
+                    + "table th, table td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 14px; }"
+                    + "table th { background: #0f172a; color: #fff; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }"
+                    + "table tr:hover { background-color: #f8fafc; }"
+                    + ".actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }"
+                    + ".button { display: inline-flex; align-items: center; justify-content: center; padding: 11px 20px; color: #fff; background-color: #0284c7; border: none; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; min-height: 42px; }"
+                    + ".button:hover { background-color: #0369a1; }"
+                    + ".button.secondary { background-color: #0d9488; }"
                     + "</style></head><body>");
-                out.println("<div class='container'><h1>Doctors List</h1>");
-                out.println("<table><thead><tr><th>Doctor Name</th><th>Specialty</th><th>Contact Number</th></tr></thead><tbody>");
+                out.println("<div class='container'><h1>👨‍⚕️ Medical Specialist Directory</h1>");
+                out.println("<div class='table-responsive'><table><thead><tr><th>Doctor Name</th><th>Specialty</th><th>Contact Number</th></tr></thead><tbody>");
 
                 while (rs.next()) {
                     out.println("<tr>");
-                    out.println("<td>" + rs.getString("name") + "</td>");
-                    out.println("<td>" + rs.getString("specialty") + "</td>");
-                    out.println("<td>" + rs.getString("contact") + "</td>");
+                    out.println("<td><strong>Dr. " + escapeHtml(rs.getString("name")) + "</strong></td>");
+                    out.println("<td>" + escapeHtml(rs.getString("specialty")) + "</td>");
+                    out.println("<td>" + escapeHtml(rs.getString("contact")) + "</td>");
                     out.println("</tr>");
                 }
 
-                out.println("</tbody></table>");
-                out.println("<a href='InsertDoctor.html' class='button'>Add New Doctor</a>");
-                out.println("<a href='dashboard.html' class='button'>Go to Dashboard</a></div>");
+                out.println("</tbody></table></div>");
+                out.println("<div class='actions'><a href='InsertDoctor.html' class='button secondary'>➕ Add New Doctor</a>");
+                out.println("<a href='dashboard.html' class='button'>← Return to Dashboard</a></div></div>");
                 out.println("</body></html>");
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -197,5 +201,14 @@ public class DoctorServlet extends HttpServlet {
     private String escapeJson(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private String escapeHtml(String input) {
+        if (input == null) return "";
+        return input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&#x27;");
     }
 }

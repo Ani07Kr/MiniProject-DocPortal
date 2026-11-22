@@ -2,103 +2,137 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocPortal Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>DocPortal - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
         body {
-            background-image: url('images/Reception.jpg');
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(13, 148, 136, 0.65)), url('images/Reception.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            color: #fff;
+            padding: 24px 14px;
+            color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
         }
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.55);
-            z-index: -1;
-        }
+
         .container {
-            width: 90%;
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-            padding: 30px;
+            width: 100%;
+            max-width: 560px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+            padding: clamp(22px, 5vw, 36px);
             text-align: center;
-            margin: 20px auto;
-            color: #333;
+            margin: auto;
+            position: relative;
+            z-index: 1;
         }
+
         header {
-            margin-bottom: 25px;
+            margin-bottom: 22px;
         }
+
         header h1 {
             margin: 0 0 10px;
-            font-size: 2.2em;
-            color: #1e3a5f;
+            font-size: clamp(1.4rem, 4vw, 1.85rem);
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
         }
+
         .role-pill {
             display: inline-block;
-            background: #e8eaf6;
-            color: #1a237e;
+            background: #e0f2fe;
+            color: #0369a1;
             padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
+            border-radius: 999px;
+            font-size: clamp(0.78rem, 2vw, 0.88rem);
+            font-weight: 700;
+            border: 1px solid #bae6fd;
+            max-width: 100%;
+            word-break: break-word;
         }
+
         nav {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin: 25px 0;
+            margin: 24px 0;
         }
+
         nav a {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px 20px;
-            background: #f8f9fa;
-            color: #1e3a5f;
+            justify-content: flex-start;
+            gap: 14px;
+            padding: 13px 18px;
+            background: #f8fafc;
+            color: #0f172a;
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 1.05em;
-            font-weight: 600;
-            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: clamp(0.92rem, 2.5vw, 1.02rem);
+            font-weight: 700;
+            border: 1.5px solid #e2e8f0;
             transition: all 0.25s ease;
+            min-height: 48px;
+            box-sizing: border-box;
+            text-align: left;
         }
+
         nav a:hover {
-            background: #1e3a5f;
+            background: #0284c7;
             color: #ffffff;
-            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.25);
+            border-color: #0284c7;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
             transform: translateY(-2px);
         }
+
         .logout {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
+            margin-top: 18px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
+
         .logout a {
-            color: #d32f2f;
+            color: #ef4444;
             text-decoration: none;
-            font-weight: bold;
-            font-size: 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
             transition: color 0.2s;
         }
+
         .logout a:hover {
             text-decoration: underline;
+        }
+
+        .home-btn {
+            color: #64748b !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+        }
+
+        .home-btn:hover {
+            color: #0f172a !important;
         }
     </style>
 </head>
@@ -106,20 +140,31 @@
     <div class="container">
         <header>
             <h1>DocPortal Dashboard</h1>
-            <div id="rolePill" class="role-pill">Loading session...</div>
+            <div id="rolePill" class="role-pill">Loading session details...</div>
         </header>
 
         <nav id="dashboardNav">
             <!-- Dynamically tailored by role -->
-            <a href="ManageAppointment.html" id="navAppointments">📅 Manage Appointments</a>
-            <a href="Prescription.html" id="navPrescriptions">💊 Prescriptions</a>
-            <a href="DoctorServlet?action=view" id="navDoctors">👨‍⚕️ View Doctor Directory</a>
-            <a href="InsertDoctor.html" id="navInsertDoctor" style="display:none;">➕ Add New Doctor</a>
-            <a href="AdminApprovalServlet" id="navAdminApproval" style="display:none; background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7;">🛡️ Verify & Authorize Doctors</a>
+            <a href="ManageAppointment.html" id="navAppointments">
+                <span>📅</span> <span>Manage Appointments</span>
+            </a>
+            <a href="Prescription.html" id="navPrescriptions">
+                <span>💊</span> <span>Prescriptions</span>
+            </a>
+            <a href="DoctorServlet?action=view" id="navDoctors">
+                <span>👨‍⚕️</span> <span>View Doctor Directory</span>
+            </a>
+            <a href="InsertDoctor.html" id="navInsertDoctor" style="display:none;">
+                <span>➕</span> <span>Add New Doctor</span>
+            </a>
+            <a href="AdminApprovalServlet" id="navAdminApproval" style="display:none; background:#f0fdf4; color:#15803d; border-color:#86efac;">
+                <span>🛡️</span> <span>Verify & Authorize Doctors</span>
+            </a>
         </nav>
 
         <div class="logout">
-            <a href="LogoutServlet">🚪 Logout</a>
+            <a href="Welcome.html" class="home-btn">← Portal Home</a>
+            <a href="LogoutServlet">🚪 Sign Out</a>
         </div>
     </div>
 
@@ -138,27 +183,45 @@
                         const name = data.displayName || data.user;
                         if (data.role === 'Doctor') {
                             rolePill.innerHTML = `👨‍⚕️ Dr. ${name} (Doctor)`;
-                            navPrescriptions.innerHTML = `✍️ Write & View Prescriptions`;
-                            navAppointments.innerHTML = `📅 View Appointments & Queue`;
+                            navPrescriptions.innerHTML = `<span>✍️</span> <span>Write & View Prescriptions</span>`;
+                            navAppointments.innerHTML = `<span>📅</span> <span>View Appointments & Queue</span>`;
                             navInsertDoctor.style.display = 'flex';
                             navAdminApproval.style.display = 'none';
                         } else if (data.role === 'Patient') {
                             rolePill.innerHTML = `👤 Patient: ${name}`;
-                            navPrescriptions.innerHTML = `💊 My Prescriptions`;
-                            navAppointments.innerHTML = `📅 Book & Manage My Appointments`;
+                            navPrescriptions.innerHTML = `<span>💊</span> <span>My Prescriptions</span>`;
+                            navAppointments.innerHTML = `<span>📅</span> <span>Book & Manage My Appointments</span>`;
                             navInsertDoctor.style.display = 'none';
                             navAdminApproval.style.display = 'none';
                         } else {
+                            // Admin
                             rolePill.innerHTML = `🛡️ Admin: ${name}`;
                             navInsertDoctor.style.display = 'flex';
                             navAdminApproval.style.display = 'flex';
+                            navPrescriptions.innerHTML = `<span>💊</span> <span>All Prescriptions</span>`;
+                            navAppointments.innerHTML = `<span>📅</span> <span>All Appointments</span>`;
                         }
                     } else {
-                        rolePill.innerHTML = `Guest Session`;
+                        // Cookie fallback
+                        const cookies = document.cookie.split('; ');
+                        let role = '';
+                        let user = '';
+                        cookies.forEach(c => {
+                            if (c.startsWith('docportal_role=')) role = c.split('=')[1];
+                            if (c.startsWith('docportal_user=')) user = c.split('=')[1];
+                        });
+                        if (role) {
+                            rolePill.innerHTML = `${role}: ${user || 'Logged In'}`;
+                            if (role === 'Doctor') {
+                                navInsertDoctor.style.display = 'flex';
+                            }
+                        } else {
+                            rolePill.innerHTML = 'Guest (Not Signed In)';
+                        }
                     }
                 })
                 .catch(() => {
-                    document.getElementById('rolePill').innerHTML = `Portal Dashboard`;
+                    document.getElementById('rolePill').innerHTML = 'DocPortal Session Active';
                 });
         });
     </script>
