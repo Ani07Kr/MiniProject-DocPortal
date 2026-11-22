@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>DocPortal Dashboard</title>
     <style>
         body {
             background-image: url('images/Reception.jpg');
@@ -18,9 +18,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
-        /* Optional overlay to darken the background for better text readability */
         body::before {
             content: '';
             position: absolute;
@@ -28,72 +27,75 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.55);
             z-index: -1;
         }
         .container {
-            width: 50%;
-            max-width: 1200px;
-            background: rgba(255, 255, 255, 0.2); /* Slight transparency */
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            padding: 30px;
             text-align: center;
             margin: 20px auto;
+            color: #333;
         }
         header {
-            background-image: url('images/Dashb4.jpg'); /* Add your header background image */
-            background-size: cover;
-            background-position: center;
-            color: #fff;
-            padding: 20px 0;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            position: relative;
+            margin-bottom: 25px;
         }
         header h1 {
-            margin: 0;
-            font-size: 2.5em;
+            margin: 0 0 10px;
+            font-size: 2.2em;
+            color: #1e3a5f;
         }
-        header img {
-            width: 100px; /* Adjust size as needed */
-            border-radius: 50%;
-            margin-bottom: 10px;
+        .role-pill {
+            display: inline-block;
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
         }
         nav {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin: 25px 0;
         }
         nav a {
-            display: block;
-            width: 60%;
-            padding: 15px;
-            margin: 10px 0;
-            background: rgba(255, 255, 255, 0.9);
-            color: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            background: #f8f9fa;
+            color: #1e3a5f;
             text-decoration: none;
             border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            font-size: 1.1em;
-            font-weight: 500;
-            transition: background-color 0.3s, box-shadow 0.3s;
+            font-size: 1.05em;
+            font-weight: 600;
+            border: 1px solid #e0e0e0;
+            transition: all 0.25s ease;
         }
         nav a:hover {
-            background: #e9ecef;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background: #1e3a5f;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(30, 58, 95, 0.25);
+            transform: translateY(-2px);
         }
         .logout {
-            text-align: center;
             margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
         }
         .logout a {
-            color: #dc3545;
+            color: #d32f2f;
             text-decoration: none;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 15px;
+            transition: color 0.2s;
         }
         .logout a:hover {
             text-decoration: underline;
@@ -103,19 +105,62 @@
 <body>
     <div class="container">
         <header>
-            <!-- Optional: Include a logo or other image here -->
-            <h1><b>Dashboard</h1>
+            <h1>DocPortal Dashboard</h1>
+            <div id="rolePill" class="role-pill">Loading session...</div>
         </header>
 
-        <nav>
-            <a href="DoctorServlet?action=view">View Doctor</a>
-            <a href="ManageAppointment.html">Manage Appointment</a>
-            <a href="Prescription.html">Prescription</a>
+        <nav id="dashboardNav">
+            <!-- Dynamically tailored by role -->
+            <a href="ManageAppointment.html" id="navAppointments">📅 Manage Appointments</a>
+            <a href="Prescription.html" id="navPrescriptions">💊 Prescriptions</a>
+            <a href="DoctorServlet?action=view" id="navDoctors">👨‍⚕️ View Doctor Directory</a>
+            <a href="InsertDoctor.html" id="navInsertDoctor" style="display:none;">➕ Add New Doctor</a>
+            <a href="AdminApprovalServlet" id="navAdminApproval" style="display:none; background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7;">🛡️ Verify & Authorize Doctors</a>
         </nav>
 
         <div class="logout">
-            <a href="Login.html">Logout</a>
+            <a href="LogoutServlet">🚪 Logout</a>
         </div>
     </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('AuthServlet')
+                .then(res => res.json())
+                .then(data => {
+                    const rolePill = document.getElementById('rolePill');
+                    const navPrescriptions = document.getElementById('navPrescriptions');
+                    const navAppointments = document.getElementById('navAppointments');
+                    const navInsertDoctor = document.getElementById('navInsertDoctor');
+                    const navAdminApproval = document.getElementById('navAdminApproval');
+
+                    if (data && data.loggedIn) {
+                        const name = data.displayName || data.user;
+                        if (data.role === 'Doctor') {
+                            rolePill.innerHTML = `👨‍⚕️ Dr. ${name} (Doctor)`;
+                            navPrescriptions.innerHTML = `✍️ Write & View Prescriptions`;
+                            navAppointments.innerHTML = `📅 View Appointments & Queue`;
+                            navInsertDoctor.style.display = 'flex';
+                            navAdminApproval.style.display = 'none';
+                        } else if (data.role === 'Patient') {
+                            rolePill.innerHTML = `👤 Patient: ${name}`;
+                            navPrescriptions.innerHTML = `💊 My Prescriptions`;
+                            navAppointments.innerHTML = `📅 Book & Manage My Appointments`;
+                            navInsertDoctor.style.display = 'none';
+                            navAdminApproval.style.display = 'none';
+                        } else {
+                            rolePill.innerHTML = `🛡️ Admin: ${name}`;
+                            navInsertDoctor.style.display = 'flex';
+                            navAdminApproval.style.display = 'flex';
+                        }
+                    } else {
+                        rolePill.innerHTML = `Guest Session`;
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('rolePill').innerHTML = `Portal Dashboard`;
+                });
+        });
+    </script>
 </body>
 </html>

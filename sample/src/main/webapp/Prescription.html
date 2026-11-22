@@ -7,73 +7,148 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url('images/DC3.jpg'); /* Replace with your background image path */
+            background-image: url('images/DC3.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            min-height: 100vh;
         }
         .container {
-            width: 70%;
-            margin: auto;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.3); /* Semi-transparent white background */
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-top: 30px;
+            width: 75%;
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 25px 35px;
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
         }
         h1 {
             text-align: center;
-            color: #333;
-        }
-        h2 {
-            color: #304931;
-            border-bottom: 2px solid #304931;
-            padding-bottom: 10px;
+            color: #2c3e50;
             margin-bottom: 20px;
         }
+        .user-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 10px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .user-status-bar a {
+            color: #d32f2f;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        h2 {
+            color: #2e7d32;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: bold;
             color: #333;
         }
-        input[type="text"], textarea {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        input[type="text"], input[type="datetime-local"], textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+        input[type="text"]:focus, input[type="datetime-local"]:focus, textarea:focus {
+            border-color: #2e7d32;
+            outline: none;
+            box-shadow: 0 0 5px rgba(46, 125, 50, 0.3);
+        }
+        input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+            color: #555;
         }
         textarea {
             resize: vertical;
         }
-        input[type="submit"] {
-            background-color: #304931;
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .quick-pills {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .quick-pill {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-pill:hover {
+            background-color: #2e7d32;
             color: white;
-            padding: 10px 20px;
+        }
+        input[type="submit"] {
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
         }
         input[type="submit"]:hover {
-            background-color: #45a049;
+            background-color: #1b5e20;
         }
-        a {
-            display: block;
+        a.home-link {
+            display: inline-block;
             text-align: center;
             margin-top: 20px;
             text-decoration: none;
-            color: #007BFF;
+            color: #1976d2;
+            font-weight: bold;
         }
-        a:hover {
+        a.home-link:hover {
             text-decoration: underline;
         }
         .form-container {
-            margin-bottom: 40px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+        .role-alert {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+            color: #0d47a1;
         }
     </style>
 </head>
@@ -81,39 +156,163 @@
     <div class="container">
         <h1>Prescription Management</h1>
 
-        <div class="form-container">
-            <h2>Write Prescription</h2>
+        <div id="userStatusBar" class="user-status-bar" style="display:none;">
+            <span id="userGreeting">👤 Checking account session...</span>
+            <a href="LogoutServlet">Logout ↪</a>
+        </div>
+
+        <div id="roleAlertMessage" class="role-alert" style="display:none;"></div>
+
+        <!-- DOCTOR-ONLY: Write Prescription Form -->
+        <div id="doctorWriteSection" class="form-container" style="display:none;">
+            <h2>✍️ Issue Medical Prescription (Doctor Access)</h2>
             <form action="PrescriptionServlet" method="post">
                 <input type="hidden" name="action" value="write">
                 <div class="form-group">
-                    <label for="doctorName">Doctor Name:</label>
-                    <input type="text" id="doctorName" name="doctorName" required>
+                    <label for="doctorName">Doctor Name (Verified from your ID):</label>
+                    <input type="text" id="doctorName" name="doctorName" readonly required>
+                    <div class="help-text">🔒 Locked to your verified doctor identity to prevent unauthorized prescriptions.</div>
                 </div>
                 <div class="form-group">
-                    <label for="patientId">Patient ID:</label>
-                    <input type="text" id="patientId" name="patientId" required>
+                    <label for="patientId">Patient ID / Phone:</label>
+                    <input type="text" id="patientId" name="patientId" placeholder="e.g. 9876543210 or P-501" required>
                 </div>
                 <div class="form-group">
-                    <label for="prescription">Prescription Details:</label>
-                    <textarea id="prescription" name="prescription" rows="4" required></textarea>
+                    <label for="prescription">Prescription & Dosage Details:</label>
+                    <textarea id="prescription" name="prescription" rows="4" placeholder="Enter medicines, dosage, and special instructions..." required></textarea>
                 </div>
-                <input type="submit" value="Submit Prescription">
+                <div class="form-group">
+                    <label for="validUntil">⏱️ Prescription Time Limit (Allowed Dosage Duration):</label>
+                    <input type="datetime-local" id="validUntil" name="validUntil" required>
+                    <div class="quick-pills">
+                        <span class="quick-pill" onclick="setPresetDuration(1)">+1 Day</span>
+                        <span class="quick-pill" onclick="setPresetDuration(3)">+3 Days</span>
+                        <span class="quick-pill" onclick="setPresetDuration(7)">+7 Days</span>
+                        <span class="quick-pill" onclick="setPresetDuration(14)">+14 Days</span>
+                        <span class="quick-pill" onclick="setPresetDuration(30)">+30 Days</span>
+                    </div>
+                    <div class="help-text">Once this duration completes, the prescription will be displayed blurred and stamped as completed.</div>
+                </div>
+                <input type="submit" value="Sign & Issue Prescription">
             </form>
         </div>
 
-        <div class="form-container">
-            <h2>Fetch Prescription</h2>
+        <!-- View / Fetch Prescription Section -->
+        <div id="fetchSection" class="form-container">
+            <h2 id="fetchTitle">🔍 Fetch Patient Prescription</h2>
             <form action="PrescriptionServlet" method="post">
                 <input type="hidden" name="action" value="fetch">
                 <div class="form-group">
-                    <label for="fetchPatientId">Patient ID:</label>
+                    <label id="fetchLabel" for="fetchPatientId">Patient ID:</label>
                     <input type="text" id="fetchPatientId" name="fetchPatientId" required>
+                    <div id="fetchNotice" class="help-text" style="display:none;"></div>
                 </div>
-                <input type="submit" value="Fetch Prescription">
+                <input type="submit" id="fetchBtn" value="View Prescription">
             </form>
         </div>
 
-        <a href="dashboard.html">Home</a>
+        <div style="text-align: center;">
+            <a href="dashboard.html" class="home-link">← Return to Dashboard</a>
+        </div>
     </div>
+
+    <script>
+        function setPresetDuration(days) {
+            const now = new Date();
+            now.setDate(now.getDate() + days);
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('validUntil').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        // Role-Based UI Customization on Page Load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set min datetime for prescription
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const validUntilEl = document.getElementById('validUntil');
+            if (validUntilEl) {
+                validUntilEl.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+                setPresetDuration(7);
+            }
+
+            // Fetch current authenticated user role
+            fetch('AuthServlet')
+                .then(res => res.json())
+                .then(data => {
+                    const statusBar = document.getElementById('userStatusBar');
+                    const userGreeting = document.getElementById('userGreeting');
+                    const roleAlert = document.getElementById('roleAlertMessage');
+                    const doctorSection = document.getElementById('doctorWriteSection');
+                    const doctorNameInput = document.getElementById('doctorName');
+                    const fetchTitle = document.getElementById('fetchTitle');
+                    const fetchLabel = document.getElementById('fetchLabel');
+                    const fetchInput = document.getElementById('fetchPatientId');
+                    const fetchBtn = document.getElementById('fetchBtn');
+                    const fetchNotice = document.getElementById('fetchNotice');
+
+                    if (data && data.loggedIn) {
+                        statusBar.style.display = 'flex';
+                        userGreeting.innerHTML = `Signed in as: <strong>${data.displayName || data.user}</strong> (${data.role})`;
+
+                        if (data.role === 'Patient') {
+                            // PATIENT SECURITY: Hide write form completely!
+                            doctorSection.style.display = 'none';
+                            roleAlert.style.display = 'block';
+                            roleAlert.innerHTML = `👤 <strong>Patient Access:</strong> You are authorized to access only your personal prescriptions. You do not have permission to write prescriptions.`;
+
+                            fetchTitle.textContent = '💊 My Prescriptions';
+                            fetchLabel.textContent = 'My Patient ID:';
+                            fetchInput.value = data.user;
+                            fetchInput.readOnly = true;
+                            fetchNotice.style.display = 'block';
+                            fetchNotice.textContent = '🔒 Locked to your account ID for patient privacy.';
+                            fetchBtn.value = 'View My Prescriptions';
+                        } else if (data.role === 'Doctor') {
+                            // DOCTOR: Show write form with locked doctor name
+                            doctorSection.style.display = 'block';
+                            doctorNameInput.value = data.displayName || data.user;
+                            roleAlert.style.display = 'block';
+                            roleAlert.innerHTML = `👨‍⚕️ <strong>Doctor Access:</strong> Logged in as Dr. ${data.displayName || data.user}. Any prescription you write will be officially stamped under your identity.`;
+                            fetchTitle.textContent = '🔍 Look Up Patient Prescription History';
+                            fetchLabel.textContent = 'Enter Patient ID / Phone:';
+                            fetchInput.placeholder = 'e.g. 9876543210 or P-501';
+                            fetchBtn.value = 'Fetch Patient Prescriptions';
+                        } else {
+                            // Admin
+                            doctorSection.style.display = 'block';
+                            doctorNameInput.value = 'Dr. A. K. Sharma';
+                            doctorNameInput.readOnly = false;
+                        }
+                    } else {
+                        // Fallback from cookies
+                        const cookies = document.cookie.split('; ');
+                        let role = '';
+                        let user = '';
+                        cookies.forEach(c => {
+                            if (c.startsWith('docportal_role=')) role = c.split('=')[1];
+                            if (c.startsWith('docportal_user=')) user = c.split('=')[1];
+                        });
+                        if (role === 'Patient') {
+                            doctorSection.style.display = 'none';
+                            fetchInput.value = user;
+                            fetchInput.readOnly = true;
+                        } else {
+                            doctorSection.style.display = 'block';
+                        }
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('doctorWriteSection').style.display = 'block';
+                });
+        });
+    </script>
 </body>
 </html>

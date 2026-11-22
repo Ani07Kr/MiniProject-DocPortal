@@ -1,5 +1,4 @@
 import java.io.IOException;
-
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -72,9 +71,53 @@ public class DoctorServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        // JSON API for dropdowns
+        if ("json".equals(action) || "list".equals(action)) {
+            response.setContentType("application/json;charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            DBConnection dbc = new DBConnection();
+            Connection conn = null;
+            PreparedStatement pstmt = null;
+            ResultSet rs = null;
+
+            try {
+                conn = dbc.dbconnection();
+                String query = "SELECT DISTINCT name, specialty, contact FROM doctors ORDER BY name ASC";
+                pstmt = conn.prepareStatement(query);
+                rs = pstmt.executeQuery();
+
+                StringBuilder json = new StringBuilder("[");
+                boolean first = true;
+                while (rs.next()) {
+                    if (!first) json.append(",");
+                    first = false;
+                    json.append("{\"name\": \"").append(escapeJson(rs.getString("name"))).append("\",")
+                        .append("\"specialty\": \"").append(escapeJson(rs.getString("specialty"))).append("\",")
+                        .append("\"contact\": \"").append(escapeJson(rs.getString("contact"))).append("\"}");
+                }
+                json.append("]");
+                out.print(json.toString());
+                out.flush();
+                return;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error!");
+                return;
+            } finally {
+                try {
+                    if (rs != null) rs.close();
+                    if (pstmt != null) pstmt.close();
+                    if (conn != null) conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        String action = request.getParameter("action");
 
         if ("view".equals(action)) {
             DBConnection dbc = new DBConnection();
@@ -127,7 +170,7 @@ public class DoctorServlet extends HttpServlet {
                 }
             }
         } else {
-            // Show the form if no action or invalid action is provided
+            // Show form
             out.println("<html><head><title>Insert Doctor</title><style>"
                 + "body { background-image: url('images/Sign.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; font-family: Arial, sans-serif; margin: 0; padding: 0; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; }"
                 + "body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: -1; }"
@@ -149,5 +192,10 @@ public class DoctorServlet extends HttpServlet {
             out.println("<a href='DoctorServlet?action=view' class='button'>View Doctor List</a>");
             out.println("</div></body></html>");
         }
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }

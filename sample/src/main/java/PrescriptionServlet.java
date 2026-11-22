@@ -1,15 +1,20 @@
 import java.io.IOException;
-
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import conn.DBConnection;
 
 @WebServlet("/PrescriptionServlet")
@@ -20,15 +25,35 @@ public class PrescriptionServlet extends HttpServlet {
         super();
     }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html");
+        response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
         String action = request.getParameter("action");
-        String doctorName = request.getParameter("doctorName");
+        String requestedDoctorName = request.getParameter("doctorName");
         String patientId = request.getParameter("patientId");
         String prescription = request.getParameter("prescription");
+        String validUntilStr = request.getParameter("validUntil");
         String fetchPatientId = request.getParameter("fetchPatientId");
+
+        // Role & Identity Resolution
+        HttpSession session = request.getSession(false);
+        String sessionUser = (session != null) ? (String) session.getAttribute("user") : null;
+        String sessionRole = (session != null) ? (String) session.getAttribute("role") : null;
+
+        if (sessionUser == null || sessionRole == null) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie c : cookies) {
+                    if ("docportal_user".equals(c.getName())) sessionUser = c.getValue();
+                    if ("docportal_role".equals(c.getName())) sessionRole = c.getValue();
+                }
+            }
+        }
 
         DBConnection dbc = new DBConnection();
         Connection conn = null;
@@ -39,7 +64,25 @@ public class PrescriptionServlet extends HttpServlet {
             conn = dbc.dbconnection();
 
             if ("write".equals(action)) {
-                // Validate doctorName and patientId
+                // =========================================================================
+                // SECURITY ENFORCEMENT: Only Doctors / Admins can write prescriptions!
+                // =========================================================================
+                if (sessionRole != null && "Patient".equalsIgnoreCase(sessionRole)) {
+                    renderPage(out, "Access Forbidden",
+                        "<div class='alert error'>⛔ <strong>Access Denied:</strong> Patients do not have access to write prescriptions.<br>"
+                        + "Only verified doctors are authorized to prescribe medications.</div>"
+                        + "<p style='text-align:center;'><a href='Prescription.html' class='btn'>Back</a> <a href='dashboard.html' class='btn secondary'>Dashboard</a></p>"
+                    );
+                    return;
+                }
+
+                // =========================================================================
+                // IDENTITY LOCK: Resolve doctor's true name from their login session!
+                // A doctor cannot write under another doctor's identity.
+                // =========================================================================
+                String doctorName = resolveDoctorName(conn, sessionUser, requestedDoctorName);
+
+                // 1. Validate appointment exists for this doctor and patient
                 String validateQuery = "SELECT COUNT(*) FROM appointments WHERE doctorName = ? AND patientId = ?";
                 pstmt = conn.prepareStatement(validateQuery);
                 pstmt.setString(1, doctorName);
@@ -49,93 +92,160 @@ public class PrescriptionServlet extends HttpServlet {
                 int count = rs.getInt(1);
 
                 if (count == 0) {
-                    out.println("<html><head><style>"
-                        + "body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-image: url('images/background.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }"
-                        + ".container { width: 70%; margin: auto; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 30px; }"
-                        + "h1 { text-align: center; color: #333; }"
-                        + "p { font-size: 18px; color: red; }"
-                        + "a { text-decoration: none; color: #007BFF; font-weight: bold; }"
-                        + "a:hover { text-decoration: underline; }"
-                        + "</style></head><body>"
-                        + "<div class='container'>"
-                        + "<h1>Prescription Management</h1>"
-                        + "<p>Invalid doctor name or patient ID. Please ensure both are correct.</p>"
-                        + "<p><a href='dashboard.html'>Go To The Dashboard</a></p>"
-                        + "</div></body></html>");
+                    renderPage(out, "Prescription Error",
+                        "<div class='alert error'>⚠️ <strong>Validation Failed:</strong> No scheduled appointment found for Dr. <strong>"
+                        + escapeHtml(doctorName) + "</strong> with Patient ID <strong>" + escapeHtml(patientId) + "</strong>.<br>"
+                        + "Doctors can only prescribe to patients who have a confirmed appointment with them.</div>"
+                        + "<p style='text-align:center;'><a href='Prescription.html' class='btn'>Back</a> <a href='dashboard.html' class='btn secondary'>Dashboard</a></p>"
+                    );
                 } else {
-                    // Proceed with inserting prescription
-                    pstmt.close(); // Close previous statement
+                    pstmt.close();
 
-                    String insertQuery = "INSERT INTO prescriptions (doctorName, patientId, prescription) VALUES (?, ?, ?)";
+                    // 2. Parse time limit
+                    Timestamp validUntilTimestamp = null;
+                    if (validUntilStr != null && !validUntilStr.trim().isEmpty()) {
+                        try {
+                            String normalized = validUntilStr.trim().replace("T", " ");
+                            if (normalized.length() == 16) normalized += ":00";
+                            validUntilTimestamp = Timestamp.valueOf(normalized);
+                        } catch (Exception e) {
+                            validUntilTimestamp = new Timestamp(System.currentTimeMillis() + (7L * 24 * 3600 * 1000));
+                        }
+                    }
+
+                    // 3. Insert prescription with verified doctorName
+                    String insertQuery = "INSERT INTO prescriptions (doctorName, patientId, prescription, valid_until) VALUES (?, ?, ?, ?)";
                     pstmt = conn.prepareStatement(insertQuery);
                     pstmt.setString(1, doctorName);
                     pstmt.setString(2, patientId);
                     pstmt.setString(3, prescription);
+                    pstmt.setTimestamp(4, validUntilTimestamp);
                     int rowsInserted = pstmt.executeUpdate();
 
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a");
+                    String expiryDisplay = (validUntilTimestamp != null) ? sdf.format(validUntilTimestamp) : "No expiration";
+
                     if (rowsInserted > 0) {
-                        out.println("<html><head><style>"
-                            + "body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-image: url('images/background.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }"
-                            + ".container { width: 70%; margin: auto; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 30px; }"
-                            + "h1 { text-align: center; color: #333; }"
-                            + "p { font-size: 18px; color: #333; }"
-                            + "a { text-decoration: none; color: #007BFF; font-weight: bold; }"
-                            + "a:hover { text-decoration: underline; }"
-                            + "</style></head><body>"
-                            + "<div class='container'>"
-                            + "<h1>Prescription Management</h1>"
-                            + "<p>Prescription written successfully.</p>"
-                            + "<p><a href='dashboard.html'>Go To The Dashboard</a></p>"
-                            + "</div></body></html>");
+                        renderPage(out, "Prescription Created",
+                            "<div class='alert success'>✅ <strong>Prescription Successfully Issued!</strong></div>"
+                            + "<div class='info-box'>"
+                            + "<p><strong>Prescribed by:</strong> Dr. " + escapeHtml(doctorName) + " (Verified Doctor ID: " + escapeHtml(sessionUser != null ? sessionUser : "System") + ")</p>"
+                            + "<p><strong>Patient ID:</strong> " + escapeHtml(patientId) + "</p>"
+                            + "<p><strong>Prescription:</strong> " + escapeHtml(prescription) + "</p>"
+                            + "<p><strong>Dosage Time Limit:</strong> " + expiryDisplay + "</p>"
+                            + "<p class='hint'>Patient will be able to view this prescription until the dosage deadline. Afterward, it will display blurred with the completed stamp.</p>"
+                            + "</div>"
+                            + "<p style='text-align:center;'><a href='Prescription.html' class='btn'>New Prescription</a> <a href='dashboard.html' class='btn secondary'>Dashboard</a></p>"
+                        );
                     } else {
-                        out.println("<html><head><style>"
-                            + "body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-image: url('images/background.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }"
-                            + ".container { width: 70%; margin: auto; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 30px; }"
-                            + "h1 { text-align: center; color: #333; }"
-                            + "p { font-size: 18px; color: #333; }"
-                            + "a { text-decoration: none; color: #007BFF; font-weight: bold; }"
-                            + "a:hover { text-decoration: underline; }"
-                            + "</style></head><body>"
-                            + "<div class='container'>"
-                            + "<h1>Prescription Management</h1>"
-                            + "<p>Failed to write prescription. Please try again.</p>"
-                            + "<p><a href='dashboard.html'>Go To The Dashboard</a></p>"
-                            + "</div></body></html>");
+                        renderPage(out, "Error",
+                            "<div class='alert error'>Failed to save prescription. Please try again.</div>"
+                            + "<p style='text-align:center;'><a href='Prescription.html' class='btn'>Try Again</a></p>"
+                        );
                     }
                 }
             } else if ("fetch".equals(action)) {
-                String selectQuery = "SELECT p.*, a.patientName FROM prescriptions p JOIN appointments a ON p.patientId = a.patientId WHERE p.patientId = ?";
-                pstmt = conn.prepareStatement(selectQuery);
-                pstmt.setString(1, fetchPatientId);
-                rs = pstmt.executeQuery();
-
-                out.println("<html><head><style>"
-                    + "body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-image: url('images/DC3.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }"
-                    + ".container { width: 70%; margin: auto; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 30px; }"
-                    + "h1 { text-align: center; color: #333; }"
-                    + "h2 { color: #4CAF50; }"
-                    + "p { font-size: 18px; color: #333; }"
-                    + "a { text-decoration: none; color: #007BFF; font-weight: bold; }"
-                    + "a:hover { text-decoration: underline; }"
-                    + "</style></head><body>"
-                    + "<div class='container'>"
-                    + "<h1>Prescription Management</h1>"
-                    + "<h2>Prescription Details</h2>");
-
-                if (rs.next()) {
-                    out.println("<p><strong>Patient Name:</strong> " + rs.getString("patientName") + "</p>");
-                    out.println("<p><strong>Doctor Name:</strong> " + rs.getString("doctorName") + "</p>");
-                    out.println("<p><strong>Prescription:</strong> " + rs.getString("prescription") + "</p>");
-                } else {
-                    out.println("<p>No prescription found for this patient ID.</p>");
+                // =========================================================================
+                // PRIVACY ENFORCEMENT: Patient can ONLY see their own prescriptions!
+                // =========================================================================
+                String activePatientFilter = fetchPatientId;
+                if ("Patient".equalsIgnoreCase(sessionRole) && sessionUser != null) {
+                    // Lock patient to their own identifier
+                    activePatientFilter = sessionUser;
                 }
 
-                out.println("<p><a href='dashboard.html'>Go To The Dashboard</a></p>"
-                    + "</div></body></html>");
+                String selectQuery = "SELECT p.*, a.patientName FROM prescriptions p JOIN appointments a ON p.patientId = a.patientId "
+                                   + "WHERE (p.patientId = ? OR a.patientName LIKE ? OR p.patientId LIKE ?) ORDER BY p.id DESC";
+                pstmt = conn.prepareStatement(selectQuery);
+                pstmt.setString(1, activePatientFilter);
+                pstmt.setString(2, "%" + activePatientFilter.replace("patient_", "") + "%");
+                pstmt.setString(3, "%" + activePatientFilter + "%");
+                rs = pstmt.executeQuery();
+
+                StringBuilder content = new StringBuilder();
+                if ("Patient".equalsIgnoreCase(sessionRole)) {
+                    content.append("<div class='role-notice'>👤 <strong>My Personal Prescriptions</strong> (Account: ")
+                           .append(escapeHtml(sessionUser)).append(")</div>");
+                } else {
+                    content.append("<h2 style='text-align:center; color:#2c3e50; margin-bottom:20px;'>Prescriptions for Patient: ")
+                           .append(escapeHtml(activePatientFilter)).append("</h2>");
+                }
+
+                boolean found = false;
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a");
+                Date now = new Date();
+
+                while (rs.next()) {
+                    found = true;
+                    String patientName = rs.getString("patientName");
+                    String docName = rs.getString("doctorName");
+                    String rxText = rs.getString("prescription");
+                    Timestamp validUntil = rs.getTimestamp("valid_until");
+
+                    boolean isExpired = (validUntil != null && validUntil.before(now));
+                    String validUntilStrFormatted = (validUntil != null) ? sdf.format(validUntil) : "Indefinite";
+
+                    content.append("<div class='rx-card ").append(isExpired ? "rx-expired" : "rx-active").append("'>");
+
+                    // Status Header
+                    if (isExpired) {
+                        content.append("<div class='rx-status-banner expired-banner'>")
+                               .append("⚠️ <strong>ALLOWED DOSE TIME HAS COMPLETED</strong> (Expired on: ")
+                               .append(validUntilStrFormatted).append(")")
+                               .append("</div>");
+                    } else {
+                        content.append("<div class='rx-status-banner active-banner'>")
+                               .append("🟢 <strong>ACTIVE PRESCRIPTION</strong> (Allowed dosage until: ")
+                               .append(validUntilStrFormatted).append(")")
+                               .append("</div>");
+                    }
+
+                    // Metadata
+                    content.append("<div class='rx-meta'>")
+                           .append("<div><strong>Patient Name:</strong> ").append(escapeHtml(patientName)).append("</div>")
+                           .append("<div><strong>Prescribing Doctor:</strong> Dr. ").append(escapeHtml(docName)).append("</div>")
+                           .append("<div><strong>Time Limit:</strong> ").append(validUntilStrFormatted).append("</div>")
+                           .append("</div>");
+
+                    // Body with Blur + Stamp if expired
+                    content.append("<div class='rx-body-wrapper'>");
+                    if (isExpired) {
+                        content.append("<div class='stamp-watermark'>ALLOWED DOSE TIME HAS COMPLETED</div>");
+                    }
+                    content.append("<div class='rx-text ").append(isExpired ? "blurred-content" : "").append("'>")
+                           .append("<strong style='display:block; margin-bottom:6px;'>Medication & Instructions:</strong>")
+                           .append(escapeHtml(rxText).replace("\n", "<br>"))
+                           .append("</div>");
+                    content.append("</div>");
+
+                    if (isExpired) {
+                        content.append("<div class='rx-expired-notice'>")
+                               .append("ℹ️ <em>The dosage duration set by Dr. ").append(escapeHtml(docName))
+                               .append(" has completed. This record is archived. Do not consume without a new medical review.</em>")
+                               .append("</div>");
+                    }
+
+                    content.append("</div>");
+                }
+
+                if (!found) {
+                    content.append("<div class='alert info'>No prescription found for: <strong>")
+                           .append(escapeHtml(activePatientFilter)).append("</strong>.</div>");
+                }
+
+                content.append("<p style='text-align:center; margin-top:25px;'>")
+                       .append("<a href='Prescription.html' class='btn'>Back</a> ")
+                       .append("<a href='dashboard.html' class='btn secondary'>Dashboard</a>")
+                       .append("</p>");
+
+                renderPage(out, "Prescription History", content.toString());
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error! Please try again later.");
+            renderPage(out, "Database Error",
+                "<div class='alert error'>Database Error: " + escapeHtml(e.getMessage()) + "</div>"
+                + "<p style='text-align:center;'><a href='Prescription.html' class='btn'>Back</a></p>"
+            );
         } finally {
             try {
                 if (rs != null) rs.close();
@@ -145,5 +255,89 @@ public class PrescriptionServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String resolveDoctorName(Connection conn, String sessionUser, String fallback) {
+        if (sessionUser != null) {
+            try {
+                String sql = "SELECT name FROM doctors WHERE LOWER(name) LIKE ? LIMIT 1";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    String key = "%" + sessionUser.replace("dr_", "").replace("_", " ") + "%";
+                    pstmt.setString(1, key.toLowerCase());
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        if (rs.next()) return rs.getString("name");
+                    }
+                }
+            } catch (Exception ignored) {}
+            if (sessionUser.toLowerCase().startsWith("dr_")) {
+                String raw = sessionUser.substring(3).replace("_", " ");
+                return Character.toUpperCase(raw.charAt(0)) + raw.substring(1);
+            }
+            return sessionUser;
+        }
+        return (fallback != null && !fallback.trim().isEmpty()) ? fallback.trim() : "Authorized Physician";
+    }
+
+    private void renderPage(PrintWriter out, String title, String bodyContent) {
+        out.println("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>" + title + "</title><style>"
+            + "body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-image: url('images/DC3.jpg'); background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 40px 15px; box-sizing: border-box; }"
+            + ".page-container { width: 100%; max-width: 850px; background: rgba(255, 255, 255, 0.94); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.22); padding: 30px 40px; box-sizing: border-box; backdrop-filter: blur(8px); }"
+            + "h1 { text-align: center; color: #1e3a5f; margin-top: 0; margin-bottom: 20px; font-size: 26px; }"
+            + ".role-notice { background: #e8eaf6; color: #283593; padding: 10px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; text-align: center; font-weight: 600; }"
+            + ".alert { padding: 14px 18px; border-radius: 6px; margin-bottom: 20px; font-size: 15px; }"
+            + ".alert.success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }"
+            + ".alert.error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }"
+            + ".alert.info { background-color: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; text-align: center; }"
+            + ".info-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 20px; }"
+            + ".info-box p { margin: 10px 0; font-size: 15px; color: #333; }"
+            + ".info-box .hint { font-size: 13px; color: #666; font-style: italic; border-top: 1px solid #dee2e6; padding-top: 10px; margin-top: 12px; }"
+            + ".btn { display: inline-block; padding: 11px 22px; background-color: #2e7d32; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin: 5px; transition: background 0.2s; }"
+            + ".btn:hover { background-color: #1b5e20; }"
+            + ".btn.secondary { background-color: #007bff; }"
+            + ".btn.secondary:hover { background-color: #0056b3; }"
+            + ".rx-card { background: #ffffff; border-radius: 10px; border: 1px solid #e0e0e0; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; }"
+            + ".rx-status-banner { padding: 10px 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }"
+            + ".active-banner { background-color: #e8f5e9; color: #2e7d32; border-bottom: 2px solid #a5d6a7; }"
+            + ".expired-banner { background-color: #ffebee; color: #d32f2f; border-bottom: 2px solid #ef9a9a; }"
+            + ".rx-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; padding: 16px 20px; background: #fafafa; border-bottom: 1px solid #eee; font-size: 14px; color: #444; }"
+            + ".rx-body-wrapper { position: relative; padding: 25px 20px; min-height: 120px; overflow: hidden; background: #fff; }"
+            + ".rx-text { font-size: 16px; line-height: 1.6; color: #2c3e50; }"
+            + ".blurred-content { filter: blur(5px); -webkit-filter: blur(5px); opacity: 0.45; user-select: none; pointer-events: none; }"
+            + ".stamp-watermark {"
+            + "    position: absolute;"
+            + "    top: 50%;"
+            + "    left: 50%;"
+            + "    transform: translate(-50%, -50%) rotate(-12deg);"
+            + "    border: 4px solid #d32f2f;"
+            + "    color: #d32f2f;"
+            + "    font-family: 'Arial Black', Impact, sans-serif;"
+            + "    font-size: 22px;"
+            + "    font-weight: 900;"
+            + "    text-transform: uppercase;"
+            + "    padding: 12px 28px;"
+            + "    border-radius: 8px;"
+            + "    background-color: rgba(255, 255, 255, 0.92);"
+            + "    box-shadow: 0 0 15px rgba(211, 47, 47, 0.45);"
+            + "    letter-spacing: 2px;"
+            + "    text-align: center;"
+            + "    z-index: 10;"
+            + "    pointer-events: none;"
+            + "    white-space: nowrap;"
+            + "}"
+            + ".rx-expired-notice { padding: 10px 20px; background: #fff3e0; color: #e65100; font-size: 13px; border-top: 1px solid #ffe0b2; }"
+            + "</style></head><body><div class='page-container'>"
+            + "<h1>Prescription Record Management</h1>"
+            + bodyContent
+            + "</div></body></html>"
+        );
+    }
+
+    private String escapeHtml(String input) {
+        if (input == null) return "";
+        return input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&#x27;");
     }
 }

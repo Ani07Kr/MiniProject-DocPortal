@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Page</title>
+    <title>DocPortal - Register</title>
     <style>
         body {
-            background-image: url('images/Sign.jpg'); /* Matching the background image */
+            background-image: url('images/Sign.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            color: #fff;
+            padding: 30px 15px;
+            color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            text-align: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        /* Optional overlay to darken the background for better text readability */
         body::before {
             content: '';
             position: absolute;
@@ -30,73 +29,145 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.55);
             z-index: -1;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.2); /* Transparent background */
-            border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Stronger shadow for depth */
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            padding: 30px 40px;
+            max-width: 520px;
+            width: 100%;
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(10px); /* Adds a blur effect behind the container */
+            box-sizing: border-box;
         }
 
         h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #1e3a5f;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
             margin-bottom: 20px;
-            color: #fff; /* Changed to white for better contrast */
+        }
+
+        .role-switch {
+            display: flex;
+            gap: 10px;
+            background: #f0f4f8;
+            padding: 6px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+            transition: all 0.2s;
+        }
+
+        .role-btn.active {
+            background: #1e3a5f;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(30, 58, 95, 0.25);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: left;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #fff; /* Changed to white for better contrast */
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.6); /* Lighter border for subtlety */
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.2); /* Transparent input background */
-            color: #fff; /* White text inside input */
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            color: #222;
             box-sizing: border-box;
+            font-size: 14px;
+            font-family: inherit;
         }
 
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.7); /* Subtle placeholder color */
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #1e3a5f;
+            outline: none;
+            box-shadow: 0 0 5px rgba(30, 58, 95, 0.25);
         }
 
-        .form-group input[type="submit"] {
-            background-color: #007bff;
+        .doctor-fields {
+            background: #f1f8e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 15px;
+        }
+
+        .doctor-fields .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #2e7d32;
             color: #fff;
             border: none;
+            padding: 12px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.25s;
+            margin-top: 10px;
         }
 
-        .form-group input[type="submit"]:hover {
-            background-color: #0056b3;
+        .btn-submit:hover {
+            background-color: #1b5e20;
         }
 
         .form-footer {
             margin-top: 20px;
             text-align: center;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
         }
 
         .form-footer a {
-            color: #fff;
+            color: #007bff;
             text-decoration: none;
+            font-weight: bold;
         }
 
         .form-footer a:hover {
@@ -106,38 +177,108 @@
 </head>
 <body>
     <div class="container">
-        <h2>Registration Page</h2>
-        <form action="RegisterServlet" method="post">
+        <h2>Create DocPortal Account</h2>
+        <div class="subtitle">Join as a Doctor or Patient</div>
+
+        <!-- Role Toggle Buttons -->
+        <div class="role-switch">
+            <div class="role-btn active" id="btnPatient" onclick="selectRole('Patient')">👤 I am a Patient</div>
+            <div class="role-btn" id="btnDoctor" onclick="selectRole('Doctor')">👨‍⚕️ I am a Doctor</div>
+        </div>
+
+        <form action="RegisterServlet" method="post" onsubmit="return validateRegistration();">
+            <input type="hidden" id="roleInput" name="role" value="Patient">
+
+            <!-- Common Fields -->
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="t1" required placeholder="Enter your username">
+                <label for="username">Username (for Login):</label>
+                <input type="text" id="username" name="t1" required placeholder="Choose a unique username (e.g. rohit123)">
             </div>
+
             <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="t2" required placeholder="Enter your email">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="t2" required placeholder="e.g. user@gmail.com">
             </div>
+
+            <div class="form-group">
+                <label for="phone">Contact Number / Phone:</label>
+                <input type="text" id="phone" name="phone" required placeholder="e.g. +91-9876543210">
+            </div>
+
+            <!-- Doctor Specific Profile Fields -->
+            <div id="doctorFieldsBox" class="doctor-fields" style="display:none;">
+                <div class="section-title">👨‍⚕️ Doctor Profile Details</div>
+                
+                <div class="form-group">
+                    <label for="doctorFullName">Doctor Official Full Name:</label>
+                    <input type="text" id="doctorFullName" name="doctorFullName" placeholder="e.g. Dr. Rajesh Verma">
+                </div>
+
+                <div class="form-group">
+                    <label for="specialty">Medical Specialty:</label>
+                    <select id="specialty" name="specialty">
+                        <option value="General Medicine">General Medicine</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="Orthopedics">Orthopedics</option>
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Gynecology">Gynecology</option>
+                        <option value="ENT">ENT (Ear, Nose, Throat)</option>
+                        <option value="Ophthalmology">Ophthalmology</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="t3" required placeholder="Enter your password">
+                <input type="password" id="password" name="t3" required placeholder="Create a secure password">
             </div>
+
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password:</label>
-                <input type="password" id="confirmPassword" name="t4" required placeholder="Confirm your password">
+                <input type="password" id="confirmPassword" name="t4" required placeholder="Re-type your password">
             </div>
-            <div class="form-group">
-                <label for="role">Select Role:</label>
-                <select id="role" name="role" required>
-                    <option value="Patient">Patient</option>
-                    <option value="Doctor">Doctor</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Register">
-            </div>
+
+            <input type="submit" value="Register Now" class="btn-submit">
         </form>
+
         <div class="form-footer">
-            <p>Already have an account? <a href="Login.html">Login here</a></p>
+            <p>Already registered? <a href="Login.html">Sign In here</a></p>
+            <p><a href="Welcome.html" style="color:#666; font-size:12px;">← Back to Home Page</a></p>
         </div>
     </div>
+
+    <script>
+        function selectRole(role) {
+            document.getElementById('roleInput').value = role;
+            const btnPatient = document.getElementById('btnPatient');
+            const btnDoctor = document.getElementById('btnDoctor');
+            const doctorBox = document.getElementById('doctorFieldsBox');
+            const doctorNameInput = document.getElementById('doctorFullName');
+
+            if (role === 'Doctor') {
+                btnDoctor.classList.add('active');
+                btnPatient.classList.remove('active');
+                doctorBox.style.display = 'block';
+                doctorNameInput.required = true;
+            } else {
+                btnPatient.classList.add('active');
+                btnDoctor.classList.remove('active');
+                doctorBox.style.display = 'none';
+                doctorNameInput.required = false;
+            }
+        }
+
+        function validateRegistration() {
+            const p1 = document.getElementById('password').value;
+            const p2 = document.getElementById('confirmPassword').value;
+            if (p1 !== p2) {
+                alert("Passwords do not match! Please check and re-type.");
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>
