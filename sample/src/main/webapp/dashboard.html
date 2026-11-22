@@ -453,8 +453,9 @@
                             greetingTitle.textContent = `Welcome, Dr. ${name}`;
                             greetingSubtitle.textContent = `Your verified Doctor practice is active. Consult patients, view your allocated 30-min queues, and issue signed prescriptions.`;
                             rolePill.innerHTML = `👨‍⚕️ Verified Medical Doctor`;
-                            txtApptTitle.textContent = `Patient Queue & Appointments`;
-                            txtApptDesc.textContent = `Inspect booked patient slots and issued tokens`;
+                            document.getElementById('tileAppointments').href = 'ManageAppointmentServlet?action=view';
+                            txtApptTitle.textContent = `View My Appointments`;
+                            txtApptDesc.textContent = `View your patient consultation queue & tokens (Read-only)`;
                             txtRxTitle.textContent = `Issue & Review Prescriptions`;
                             txtRxDesc.textContent = `Sign new prescriptions under your official identity`;
                             tileAddDoctor.style.display = 'flex';

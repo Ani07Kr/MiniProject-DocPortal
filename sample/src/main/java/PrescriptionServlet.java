@@ -210,7 +210,10 @@ public class PrescriptionServlet extends HttpServlet {
                     // Body with Blur + Stamp if expired
                     content.append("<div class='rx-body-wrapper'>");
                     if (isExpired) {
-                        content.append("<div class='stamp-watermark'>ALLOWED DOSE TIME HAS COMPLETED</div>");
+                        content.append("<div class='stamp-watermark'>")
+                               .append("ALLOWED DOSE TIME HAS COMPLETED<br>")
+                               .append("<span class='stamp-date-badge'>EXPIRED: ").append(validUntilStrFormatted).append("</span>")
+                               .append("</div>");
                     }
                     content.append("<div class='rx-text ").append(isExpired ? "blurred-content" : "").append("'>")
                            .append("<strong style='display:block; margin-bottom:6px;'>Medication & Instructions:</strong>")
@@ -304,28 +307,41 @@ public class PrescriptionServlet extends HttpServlet {
             + ".rx-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; padding: 14px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #475569; }"
             + ".rx-body-wrapper { position: relative; padding: 25px 20px; min-height: 120px; overflow: hidden; background: #fff; }"
             + ".rx-text { font-size: 15px; line-height: 1.6; color: #1e293b; }"
-            + ".blurred-content { filter: blur(5px); -webkit-filter: blur(5px); opacity: 0.45; user-select: none; pointer-events: none; }"
+            + ".blurred-content { filter: blur(7px); -webkit-filter: blur(7px); opacity: 0.35; user-select: none; pointer-events: none; }"
             + ".stamp-watermark {"
             + "    position: absolute;"
             + "    top: 50%;"
             + "    left: 50%;"
             + "    transform: translate(-50%, -50%) rotate(-10deg);"
-            + "    border: 3px solid #dc2626;"
+            + "    border: 3.5px solid #dc2626;"
             + "    color: #dc2626;"
             + "    font-family: 'Arial Black', Impact, sans-serif;"
-            + "    font-size: clamp(12px, 3.8vw, 20px);"
+            + "    font-size: clamp(13px, 3.8vw, 19px);"
             + "    font-weight: 900;"
             + "    text-transform: uppercase;"
-            + "    padding: 8px clamp(10px, 3vw, 24px);"
-            + "    border-radius: 8px;"
-            + "    background-color: rgba(255, 255, 255, 0.94);"
-            + "    box-shadow: 0 0 15px rgba(220, 38, 38, 0.35);"
+            + "    padding: 10px clamp(12px, 3.5vw, 24px);"
+            + "    border-radius: 10px;"
+            + "    background-color: rgba(255, 255, 255, 0.96);"
+            + "    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4), inset 0 0 10px rgba(220, 38, 38, 0.1);"
             + "    letter-spacing: 1.5px;"
             + "    text-align: center;"
             + "    z-index: 10;"
             + "    pointer-events: none;"
-            + "    max-width: 90%;"
+            + "    max-width: 92%;"
             + "    box-sizing: border-box;"
+            + "    line-height: 1.3;"
+            + "}"
+            + ".stamp-date-badge {"
+            + "    display: inline-block;"
+            + "    margin-top: 6px;"
+            + "    padding: 3px 10px;"
+            + "    background: #fef2f2;"
+            + "    color: #b91c1c;"
+            + "    border: 1.5px solid #f87171;"
+            + "    border-radius: 6px;"
+            + "    font-size: 0.65em;"
+            + "    font-weight: 800;"
+            + "    letter-spacing: 0.8px;"
             + "}"
             + ".rx-expired-notice { padding: 10px 18px; background: #fff7ed; color: #c2410c; font-size: 13px; border-top: 1px solid #ffedd5; line-height: 1.4; }"
             + "</style></head><body><div class='page-container'>"

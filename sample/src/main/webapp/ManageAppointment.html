@@ -384,6 +384,16 @@
         }
 
         window.onload = function() {
+            // DOCTOR RESTRICTION: Doctors can only view appointments, not book/edit/cancel
+            fetch('AuthServlet')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.loggedIn && data.role === 'Doctor') {
+                        window.location.replace('ManageAppointmentServlet?action=view');
+                    }
+                })
+                .catch(() => {});
+
             updateFormFields();
             loadDoctors();
             var today = new Date().toISOString().split('T')[0];

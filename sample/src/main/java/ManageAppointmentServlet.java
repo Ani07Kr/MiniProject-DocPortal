@@ -6,11 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import conn.DBConnection;
 
 @WebServlet("/ManageAppointmentServlet")
@@ -22,9 +26,156 @@ public class ManageAppointmentServlet extends HttpServlet {
         super();
     }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        HttpSession session = request.getSession(false);
+        String sessionRole = (session != null) ? (String) session.getAttribute("role") : null;
+        String sessionUser = (session != null) ? (String) session.getAttribute("user") : null;
+        String sessionDisplayName = (session != null) ? (String) session.getAttribute("displayName") : null;
+
+        if (sessionRole == null && request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("docportal_role".equals(c.getName())) sessionRole = c.getValue();
+                if ("docportal_user".equals(c.getName())) sessionUser = c.getValue();
+                if ("docportal_displayName".equals(c.getName())) sessionDisplayName = c.getValue();
+            }
+        }
+
+        DBConnection dbc = new DBConnection();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = dbc.dbconnection();
+
+            StringBuilder query = new StringBuilder("SELECT * FROM appointments");
+            List<String> queryParams = new ArrayList<>();
+
+            if ("Doctor".equalsIgnoreCase(sessionRole)) {
+                String doctorFilter = (sessionDisplayName != null && !sessionDisplayName.isEmpty()) ? sessionDisplayName : (sessionUser != null ? sessionUser : "");
+                String cleanName = doctorFilter.replace("Dr. ", "").replace("Dr.", "").trim();
+                query.append(" WHERE doctorName LIKE ? OR doctorName LIKE ?");
+                queryParams.add("%" + doctorFilter + "%");
+                queryParams.add("%" + cleanName + "%");
+            }
+            query.append(" ORDER BY appointmentDate ASC, time_slot ASC, token_number ASC");
+
+            pstmt = conn.prepareStatement(query.toString());
+            for (int i = 0; i < queryParams.size(); i++) {
+                pstmt.setString(i + 1, queryParams.get(i));
+            }
+
+            rs = pstmt.executeQuery();
+
+            StringBuilder content = new StringBuilder();
+            if ("Doctor".equalsIgnoreCase(sessionRole)) {
+                content.append("<div class='alert' style='background:#f0fdf4; border:1.5px solid #86efac; color:#166534;'>")
+                       .append("👨‍⚕️ <strong>Doctor Appointment Queue:</strong> Viewing scheduled consultations for <strong>Dr. ")
+                       .append(escapeHtml(sessionDisplayName != null ? sessionDisplayName : sessionUser))
+                       .append("</strong>.<br><small style='color:#15803d; font-size:12px;'>🔒 Read-Only Access: Doctors can only view appointments and cannot book, edit, or cancel appointments.</small>")
+                       .append("</div>");
+            } else {
+                content.append("<div class='alert' style='background:#f0f9ff; border:1.5px solid #bae6fd; color:#0369a1;'>")
+                       .append("📋 <strong>Scheduled Appointments Queue</strong>")
+                       .append("</div>");
+            }
+
+            content.append("<div style='width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:20px; border-radius:10px; border:1px solid #e2e8f0;'>")
+                   .append("<table style='width:100%; border-collapse:collapse; min-width:640px; font-size:14px;'>")
+                   .append("<thead><tr style='background:#0f172a; color:#fff; text-align:left;'>")
+                   .append("<th style='padding:12px 14px;'>Token</th>")
+                   .append("<th style='padding:12px 14px;'>Patient Name</th>")
+                   .append("<th style='padding:12px 14px;'>Contact / ID</th>")
+                   .append("<th style='padding:12px 14px;'>Date</th>")
+                   .append("<th style='padding:12px 14px;'>30-Min Window</th>")
+                   .append("<th style='padding:12px 14px;'>Doctor</th>")
+                   .append("<th style='padding:12px 14px;'>Actions</th>")
+                   .append("</tr></thead><tbody>");
+
+            boolean hasAppts = false;
+            while (rs.next()) {
+                hasAppts = true;
+                String apptId = rs.getString("appointmentId");
+                String doc = rs.getString("doctorName");
+                String patId = rs.getString("patientId");
+                String patName = rs.getString("patientName");
+                String apptDate = rs.getString("appointmentDate");
+                String slot = rs.getString("time_slot");
+                int token = rs.getInt("token_number");
+                if (token <= 0) token = 1;
+
+                content.append("<tr style='border-bottom:1px solid #e2e8f0;'>")
+                       .append("<td style='padding:12px 14px;'><span style='background:#0284c7; color:#fff; padding:3px 10px; border-radius:999px; font-weight:800; font-size:12px;'>Token #").append(token).append("</span></td>")
+                       .append("<td style='padding:12px 14px;'><strong>").append(escapeHtml(patName)).append("</strong></td>")
+                       .append("<td style='padding:12px 14px;'>").append(escapeHtml(patId)).append("</td>")
+                       .append("<td style='padding:12px 14px;'>").append(escapeHtml(apptDate)).append("</td>")
+                       .append("<td style='padding:12px 14px;'><span style='background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:600;'>").append(escapeHtml(slot)).append("</span></td>")
+                       .append("<td style='padding:12px 14px;'>Dr. ").append(escapeHtml(doc)).append("</td>")
+                       .append("<td style='padding:12px 14px; white-space:nowrap;'>")
+                       .append("<a href='Prescription.html' style='background:#16a34a; color:#fff; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; text-decoration:none;'>✍️ Write Rx</a> ")
+                       .append("<a href='downloadSlip?appointmentId=").append(escapeHtml(apptId)).append("' style='background:#0f172a; color:#fff; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; text-decoration:none;'>📄 Slip</a>")
+                       .append("</td>")
+                       .append("</tr>");
+            }
+
+            if (!hasAppts) {
+                content.append("<tr><td colspan='7' style='text-align:center; padding:30px; color:#64748b; font-style:italic;'>No appointments scheduled at this time.</td></tr>");
+            }
+
+            content.append("</tbody></table></div>");
+            content.append("<div class='action-group' style='display:flex; justify-content:center; gap:10px;'>")
+                   .append("<a href='dashboard.html' class='btn secondary'>← Return to Dashboard</a>")
+                   .append("</div>");
+
+            renderHtml(out, "Doctor Consultation Queue", content.toString());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            renderHtml(out, "Database Error",
+                "<div class='alert error'>Database Error: " + escapeHtml(e.getMessage()) + "</div>"
+                + "<p style='text-align:center;'><a href='dashboard.html' class='btn'>Back</a></p>"
+            );
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+
+        HttpSession session = request.getSession(false);
+        String sessionRole = (session != null) ? (String) session.getAttribute("role") : null;
+        if (sessionRole == null && request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("docportal_role".equals(c.getName())) sessionRole = c.getValue();
+            }
+        }
+
+        // DOCTOR RESTRICTION: Doctors cannot book, edit, or cancel!
+        if ("Doctor".equalsIgnoreCase(sessionRole)) {
+            renderHtml(out, "Access Denied",
+                "<div class='alert error'>⛔ <strong>Access Denied for Doctors:</strong><br><br>"
+                + "Doctor accounts are strictly authorized to <strong>view</strong> their scheduled appointments queue.<br>"
+                + "Doctors are not permitted to book, edit, or cancel appointments.<br>"
+                + "Please log in as a Patient to book consultations or as Admin for scheduling changes.</div>"
+                + "<div class='action-group'>"
+                + "<a href='ManageAppointmentServlet?action=view' class='btn'>View My Appointments</a>"
+                + "<a href='dashboard.html' class='btn secondary'>Return to Dashboard</a>"
+                + "</div>"
+            );
+            return;
+        }
 
         String action = request.getParameter("action");
         String appointmentId = request.getParameter("appointmentId");
