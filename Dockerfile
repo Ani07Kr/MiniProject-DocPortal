@@ -7,7 +7,8 @@
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 COPY . .
-RUN javac -cp "sample/src/main/webapp/WEB-INF/lib/*:sample/build/classes" -d sample/build/classes \
+RUN mkdir -p sample/build/classes && \
+    javac -cp "sample/src/main/webapp/WEB-INF/lib/*:sample/build/classes" -d sample/build/classes \
     sample/src/main/java/conn/DBConnection.java \
     sample/src/main/java/*.java
 
