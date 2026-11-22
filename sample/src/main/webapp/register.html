@@ -3,11 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>DocPortal - Register</title>
+    <title>DocConnect | Create Account</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --primary-light: #e0f2fe;
+            --accent: #0d9488;
+            --accent-gradient: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+            --dark: #0f172a;
+            --gray-700: #334155;
+            --gray-500: #64748b;
+            --gray-100: #f1f5f9;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.96);
+            --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+        }
+
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -16,83 +33,210 @@
         }
 
         body {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(13, 148, 136, 0.65)), url('images/Sign.jpg');
+            background: linear-gradient(135deg, rgba(240, 249, 255, 0.92) 0%, rgba(240, 253, 250, 0.94) 100%), 
+                        url('images/Sign.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            margin: 0;
-            padding: 24px 14px;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-            padding: clamp(22px, 5vw, 38px);
-            max-width: 500px;
-            width: 100%;
-            position: relative;
-            z-index: 1;
-        }
-
-        h2 {
-            margin-top: 0;
-            margin-bottom: 6px;
-            color: #0f172a;
-            text-align: center;
-            font-size: clamp(1.4rem, 4vw, 1.8rem);
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #64748b;
-            font-size: 0.88rem;
-            margin-bottom: 22px;
-        }
-
-        .role-switch {
             display: flex;
-            gap: 8px;
-            background: #f1f5f9;
-            padding: 6px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            color: var(--dark);
         }
 
-        .role-btn {
-            flex: 1;
-            text-align: center;
-            padding: 10px 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: clamp(0.82rem, 2.5vw, 0.92rem);
-            color: #64748b;
-            transition: all 0.2s;
-            user-select: none;
+        /* --- NAVBAR --- */
+        .navbar {
+            height: 72px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            min-height: 42px;
-        }
-
-        .role-btn.active {
-            background: #0284c7;
-            color: #fff;
+            color: var(--white);
             box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
         }
 
+        .brand-text h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--dark);
+        }
+
+        .brand-text span {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-link {
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 14px;
+        }
+
+        .btn-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border: 1px solid #bae6fd;
+        }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 5%;
+        }
+
+        .register-card {
+            max-width: 540px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: var(--shadow-lg);
+            padding: clamp(24px, 5vw, 44px);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .register-header h1 {
+            font-size: clamp(1.5rem, 3.5vw, 1.95rem);
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -0.6px;
+            margin-bottom: 6px;
+        }
+
+        .register-header p {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        /* --- ROLE SELECTION CARDS --- */
+        .role-switch-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .role-card-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 10px;
+            background: var(--white);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+            text-align: center;
+        }
+
+        .role-card-btn .role-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            color: var(--gray-700);
+            transition: all 0.25s;
+        }
+
+        .role-card-btn .role-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--gray-700);
+        }
+
+        .role-card-btn .role-desc {
+            font-size: 0.74rem;
+            color: var(--gray-500);
+        }
+
+        .role-card-btn.active {
+            border-color: var(--primary);
+            background: #f0f9ff;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
+        }
+
+        .role-card-btn.active .role-icon {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .role-card-btn.active .role-title {
+            color: var(--primary-dark);
+        }
+
+        /* --- FORM ELEMENTS --- */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             text-align: left;
         }
 
@@ -100,188 +244,237 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 700;
-            color: #334155;
+            color: var(--gray-700);
             font-size: 0.86rem;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 11px 13px;
+            padding: 12px 14px;
             border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
+            font-size: 16px; /* Prevents auto zoom on iOS */
+            color: var(--dark);
             background: #f8fafc;
-            color: #0f172a;
-            font-size: 16px; /* Prevents auto zoom on mobile Safari */
             transition: all 0.2s;
         }
 
         .form-group input:focus,
         .form-group select:focus {
-            border-color: #0284c7;
-            background: #fff;
+            border-color: var(--primary);
+            background: var(--white);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+            box-shadow: 0 0 0 3.5px rgba(2, 132, 199, 0.18);
         }
 
-        .doctor-fields {
+        /* Doctor Credentials Section */
+        .doctor-box {
             background: #f0fdf4;
-            border-left: 4px solid #16a34a;
-            padding: 16px 14px;
-            border-radius: 0 10px 10px 0;
-            margin-bottom: 16px;
-            border: 1px solid #dcfce7;
-            border-left-width: 4px;
+            border: 1.5px solid #86efac;
+            border-left: 5px solid #16a34a;
+            border-radius: var(--radius-md);
+            padding: 18px 16px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
         }
 
-        .doctor-fields .section-title {
-            font-size: 0.8rem;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .doctor-box-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.84rem;
             font-weight: 800;
             color: #15803d;
-            margin-bottom: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
         }
 
-        .btn-submit {
+        .verification-notice {
+            background: #dcfce7;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: #166534;
+            line-height: 1.4;
+            margin-top: 10px;
+        }
+
+        .submit-btn {
             width: 100%;
-            background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
-            color: #fff;
-            border: none;
             padding: 13px;
-            border-radius: 10px;
-            cursor: pointer;
+            background: var(--accent-gradient);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
             font-size: 1rem;
             font-weight: 700;
+            cursor: pointer;
             transition: all 0.25s;
-            margin-top: 8px;
             box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
             min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
         }
 
-        .btn-submit:hover {
+        .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
         }
 
         .form-footer {
-            margin-top: 22px;
+            margin-top: 24px;
             text-align: center;
             font-size: 0.88rem;
-            color: #64748b;
+            color: var(--gray-500);
             border-top: 1px solid #e2e8f0;
-            padding-top: 16px;
+            padding-top: 18px;
         }
 
         .form-footer a {
-            color: #0284c7;
-            text-decoration: none;
+            color: var(--primary);
             font-weight: 700;
+            text-decoration: none;
         }
 
         .form-footer a:hover {
             text-decoration: underline;
         }
-
-        .back-home {
-            display: inline-block;
-            margin-top: 10px;
-            color: #64748b;
-            font-size: 0.82rem;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .back-home:hover {
-            color: #0f172a;
-        }
-
-        @media (max-width: 400px) {
-            .role-switch {
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Create DocPortal Account</h2>
-        <div class="subtitle">Join as a Doctor or Patient</div>
 
-        <!-- Role Toggle Buttons -->
-        <div class="role-switch">
-            <div class="role-btn active" id="btnPatient" onclick="selectRole('Patient')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                I am a Patient
+    <!-- TOP NAVBAR -->
+    <nav class="navbar">
+        <a href="Welcome.html" class="brand">
+            <div class="brand-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    <path d="M12 9v6m-3-3h6"/>
+                </svg>
             </div>
-            <div class="role-btn" id="btnDoctor" onclick="selectRole('Doctor')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
-                I am a Doctor
+            <div class="brand-text">
+                <h2>Doc<span>Connect</span></h2>
             </div>
+        </a>
+
+        <div class="nav-actions">
+            <a href="Welcome.html" class="btn-link">Home</a>
+            <a href="Login.html" class="btn-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Sign In
+            </a>
         </div>
+    </nav>
 
-        <form action="RegisterServlet" method="post" onsubmit="return validateRegistration();">
-            <input type="hidden" id="roleInput" name="role" value="Patient">
-
-            <!-- Common Fields -->
-            <div class="form-group">
-                <label for="username">Username (for Login):</label>
-                <input type="text" id="username" name="t1" required placeholder="Choose a unique username" autocomplete="username">
+    <!-- MAIN FORM -->
+    <main class="main-wrapper">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="badge-pill">Free Registration</div>
+                <h1>Create Your Account</h1>
+                <p>Join DocConnect as a Patient or Healthcare Professional</p>
             </div>
 
-            <div class="form-group">
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="t2" required placeholder="e.g. user@gmail.com" autocomplete="email">
-            </div>
-
-            <div class="form-group">
-                <label for="phone">Contact Number / Phone:</label>
-                <input type="tel" id="phone" name="phone" required placeholder="e.g. 9876543210" autocomplete="tel">
-            </div>
-
-            <!-- Doctor Specific Profile Fields -->
-            <div id="doctorFieldsBox" class="doctor-fields" style="display:none;">
-                <div class="section-title">👨‍⚕️ Doctor Credentials (Requires Admin Verification)</div>
-                
-                <div class="form-group">
-                    <label for="doctorFullName">Doctor Official Full Name:</label>
-                    <input type="text" id="doctorFullName" name="doctorFullName" placeholder="e.g. Dr. Rajesh Verma">
+            <!-- Role Selector -->
+            <div class="role-switch-container">
+                <div class="role-card-btn active" id="btnPatient" onclick="selectRole('Patient')">
+                    <div class="role-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="role-title">Patient</div>
+                    <div class="role-desc">Book slots & view Rx</div>
                 </div>
 
-                <div class="form-group">
-                    <label for="specialty">Medical Specialty:</label>
-                    <select id="specialty" name="specialty">
-                        <option value="General Medicine">General Medicine</option>
-                        <option value="Cardiology">Cardiology</option>
-                        <option value="Dermatology">Dermatology</option>
-                        <option value="Orthopedics">Orthopedics</option>
-                        <option value="Pediatrics">Pediatrics</option>
-                        <option value="Neurology">Neurology</option>
-                        <option value="Gynecology">Gynecology</option>
-                        <option value="ENT">ENT (Ear, Nose, Throat)</option>
-                        <option value="Ophthalmology">Ophthalmology</option>
-                    </select>
+                <div class="role-card-btn" id="btnDoctor" onclick="selectRole('Doctor')">
+                    <div class="role-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+                    </div>
+                    <div class="role-title">Doctor</div>
+                    <div class="role-desc">Write Rx & manage slots</div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="t3" required placeholder="Create a secure password" autocomplete="new-password">
+            <form action="RegisterServlet" method="post" onsubmit="return validateRegistration();">
+                <input type="hidden" id="roleInput" name="role" value="Patient">
+
+                <div class="form-group">
+                    <label for="username">Username (Account ID):</label>
+                    <input type="text" id="username" name="t1" required placeholder="Choose a unique username" autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="t2" required placeholder="name@example.com" autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Contact Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="e.g. +91 9876543210" autocomplete="tel">
+                </div>
+
+                <!-- Doctor Credentials Box -->
+                <div id="doctorFieldsBox" class="doctor-box" style="display:none;">
+                    <div class="doctor-box-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                        Doctor Credential Verification
+                    </div>
+
+                    <div class="form-group">
+                        <label for="doctorFullName">Doctor Official Full Name:</label>
+                        <input type="text" id="doctorFullName" name="doctorFullName" placeholder="e.g. Dr. Rajesh Verma">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="specialty">Medical Specialty:</label>
+                        <select id="specialty" name="specialty">
+                            <option value="General Medicine">General Medicine</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Dermatology">Dermatology</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="Pediatrics">Pediatrics</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Gynecology">Gynecology</option>
+                            <option value="ENT">ENT (Ear, Nose, Throat)</option>
+                            <option value="Ophthalmology">Ophthalmology</option>
+                        </select>
+                    </div>
+
+                    <div class="verification-notice">
+                        🛡️ <strong>Admin Verification Rule:</strong> New doctor accounts are placed in <code>PENDING</code> review. The Admin will authorize your account before you can log in.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="t3" required placeholder="Create secure password" autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" name="t4" required placeholder="Re-type your password" autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Create Free Account</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </form>
+
+            <div class="form-footer">
+                Already registered? <a href="Login.html">Sign in to your portal</a>
             </div>
-
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password:</label>
-                <input type="password" id="confirmPassword" name="t4" required placeholder="Re-type your password" autocomplete="new-password">
-            </div>
-
-            <input type="submit" value="Register Now" class="btn-submit">
-        </form>
-
-        <div class="form-footer">
-            <p>Already registered? <a href="Login.html">Sign In here</a></p>
-            <a href="Welcome.html" class="back-home">← Back to Homepage</a>
         </div>
-    </div>
+    </main>
 
     <script>
         function selectRole(role) {
@@ -308,7 +501,7 @@
             const p1 = document.getElementById('password').value;
             const p2 = document.getElementById('confirmPassword').value;
             if (p1 !== p2) {
-                alert("Passwords do not match! Please check and re-type.");
+                alert("Passwords do not match! Please verify your password entry.");
                 return false;
             }
             return true;

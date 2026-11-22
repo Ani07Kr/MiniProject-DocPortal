@@ -3,11 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>DocPortal - Manage Appointment</title>
+    <title>DocConnect | Manage Appointments</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --primary-light: #e0f2fe;
+            --accent: #0d9488;
+            --accent-gradient: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+            --dark: #0f172a;
+            --gray-700: #334155;
+            --gray-500: #64748b;
+            --gray-100: #f1f5f9;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.96);
+            --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+        }
+
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -16,85 +33,186 @@
         }
 
         body {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(13, 148, 136, 0.65)), url('images/Dc2.jpg');
+            background: linear-gradient(135deg, rgba(240, 249, 255, 0.92) 0%, rgba(240, 253, 250, 0.94) 100%), 
+                        url('images/Dc2.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            color: var(--dark);
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            height: 72px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+            display: flex;
             align-items: center;
-            padding: 24px 14px;
+            justify-content: space-between;
+            padding: 0 6%;
+            z-index: 100;
         }
 
-        .container {
-            width: 100%;
-            max-width: 640px;
-            margin: auto;
-            padding: clamp(22px, 5vw, 38px);
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-            position: relative;
-            z-index: 1;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--dark);
         }
 
-        h1 {
-            text-align: center;
-            color: #0f172a;
-            margin-bottom: 6px;
-            font-size: clamp(1.4rem, 4vw, 1.85rem);
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        .brand-text h2 {
+            font-size: 1.25rem;
             font-weight: 800;
             letter-spacing: -0.5px;
+            color: var(--dark);
         }
 
-        .subtitle {
-            text-align: center;
-            color: #64748b;
-            font-size: 0.88rem;
-            margin-bottom: 22px;
+        .brand-text span {
+            color: var(--primary);
         }
 
-        .radio-group {
+        .nav-actions {
             display: flex;
-            gap: 8px;
-            margin-bottom: 22px;
-            background: #f1f5f9;
-            padding: 6px;
-            border-radius: 12px;
+            align-items: center;
+            gap: 12px;
         }
 
-        .radio-label {
+        .btn-link {
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 14px;
+        }
+
+        .btn-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border: 1px solid #bae6fd;
+        }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 40px 5%;
+        }
+
+        .appointment-card {
+            width: 100%;
+            max-width: 660px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: var(--shadow-lg);
+            padding: clamp(24px, 5vw, 42px);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
             gap: 6px;
-            margin: 0;
-            padding: 10px 8px;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .card-header h1 {
+            font-size: clamp(1.5rem, 3.5vw, 1.95rem);
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        /* --- TABS --- */
+        .action-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 700;
-            font-size: clamp(0.82rem, 2.5vw, 0.92rem);
-            color: #475569;
-            border-radius: 8px;
+            font-size: clamp(0.82rem, 2vw, 0.9rem);
+            color: var(--gray-500);
             transition: all 0.2s;
             user-select: none;
             min-height: 42px;
+            text-align: center;
         }
 
-        .radio-label input[type="radio"] {
+        .tab-btn input[type="radio"] {
             display: none;
         }
 
-        .radio-label.active {
-            background: #0284c7;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
         }
 
+        /* --- FORM CONTROLS --- */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             text-align: left;
         }
 
@@ -102,85 +220,90 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 700;
-            color: #334155;
+            color: var(--gray-700);
             font-size: 0.86rem;
         }
 
         input[type="text"], input[type="date"], select {
             width: 100%;
-            padding: 11px 13px;
+            padding: 12px 14px;
             border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 16px; /* Prevents auto zoom on mobile Safari */
-            background-color: #f8fafc;
-            color: #0f172a;
+            border-radius: var(--radius-md);
+            font-size: 16px; /* Prevents auto zoom on mobile */
+            color: var(--dark);
+            background: #f8fafc;
             transition: all 0.2s;
         }
 
         input[type="text"]:focus, input[type="date"]:focus, select:focus {
-            border-color: #0284c7;
-            background: #fff;
+            border-color: var(--primary);
+            background: var(--white);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+            box-shadow: 0 0 0 3.5px rgba(2, 132, 199, 0.18);
         }
 
         input[readonly] {
             background-color: #e2e8f0;
-            color: #475569;
             cursor: not-allowed;
+            color: var(--gray-700);
         }
 
-        .slot-badge {
-            background-color: #e0f2fe;
-            border-left: 4px solid #0284c7;
-            padding: 10px 14px;
+        .capacity-alert {
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            border-left: 4px solid #16a34a;
+            padding: 12px 14px;
             font-size: 0.82rem;
-            color: #0369a1;
+            color: #166534;
             margin-top: 8px;
             border-radius: 0 8px 8px 0;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
-        input[type="submit"] {
-            background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
-            color: white;
+        .submit-btn {
+            width: 100%;
             padding: 13px;
+            background: var(--accent-gradient);
+            color: var(--white);
             border: none;
-            border-radius: 10px;
-            cursor: pointer;
+            border-radius: var(--radius-md);
             font-size: 1rem;
             font-weight: 700;
-            width: 100%;
+            cursor: pointer;
             transition: all 0.25s;
             box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
-            margin-top: 8px;
             min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
         }
 
-        input[type="submit"]:hover {
+        .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
         }
 
-        .nav-links-footer {
+        .footer-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 22px;
-            padding-top: 16px;
+            margin-top: 24px;
+            padding-top: 18px;
             border-top: 1px solid #e2e8f0;
-            font-size: 0.86rem;
+            font-size: 0.88rem;
             flex-wrap: wrap;
             gap: 10px;
         }
 
-        .nav-links-footer a {
+        .footer-nav a {
             text-decoration: none;
-            color: #0284c7;
+            color: var(--primary);
             font-weight: 700;
         }
 
-        .nav-links-footer a:hover {
+        .footer-nav a:hover {
             text-decoration: underline;
         }
     </style>
@@ -215,9 +338,8 @@
             var formGroups = document.querySelectorAll('.booking-field');
             var appointmentIdField = document.getElementById("appointmentId");
 
-            // Update tab UI styling
-            document.querySelectorAll('.radio-label').forEach(el => el.classList.remove('active'));
-            actionRadio.closest('.radio-label').classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            actionRadio.closest('.tab-btn').classList.add('active');
 
             if (action === "cancel") {
                 appointmentIdField.removeAttribute("readonly");
@@ -238,7 +360,6 @@
             document.getElementById("appointmentId").value = "APPT" + Math.floor(1000 + Math.random() * 9000);
         }
 
-        // Dynamically load doctor list from database API
         function loadDoctors() {
             fetch('DoctorServlet?action=json')
                 .then(response => {
@@ -271,84 +392,120 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <h1>🏥 Manage Appointment</h1>
-        <p class="subtitle">Book 30-minute consultation slots with smart tokens</p>
 
-        <form action="ManageAppointmentServlet" method="post" onsubmit="return validateForm();">
-            <div class="radio-group">
-                <label class="radio-label active">
-                    <input type="radio" name="action" value="book" checked onclick="updateFormFields()"> 📅 Book Slot
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="action" value="update" onclick="updateFormFields()"> ✏️ Reschedule
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="action" value="cancel" onclick="updateFormFields()"> ❌ Cancel
-                </label>
+    <!-- TOP NAVBAR -->
+    <nav class="navbar">
+        <a href="Welcome.html" class="brand">
+            <div class="brand-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    <path d="M12 9v6m-3-3h6"/>
+                </svg>
             </div>
-
-            <div class="form-group">
-                <label for="appointmentId">Appointment ID:</label>
-                <input type="text" id="appointmentId" name="appointmentId">
+            <div class="brand-text">
+                <h2>Doc<span>Connect</span></h2>
             </div>
+        </a>
 
-            <div class="form-group booking-field">
-                <label for="doctorName">👨‍⚕️ Select Doctor (by Specialty):</label>
-                <select id="doctorName" name="doctorName" required>
-                    <option value="">-- Choose Doctor by Specialty --</option>
-                    <option value="Dr. A. K. Sharma">Dr. A. K. Sharma (Cardiology)</option>
-                    <option value="Dr. Priya Verma">Dr. Priya Verma (Dermatology)</option>
-                    <option value="Dr. Rajesh Mehta">Dr. Rajesh Mehta (Orthopedics)</option>
-                </select>
-            </div>
-
-            <div class="form-group booking-field">
-                <label for="patientId">Patient Phone No / ID:</label>
-                <input type="text" id="patientId" name="patientId" placeholder="e.g. 9876543210 or P-501">
-            </div>
-
-            <div class="form-group booking-field">
-                <label for="patientName">Patient Full Name:</label>
-                <input type="text" id="patientName" name="patientName" placeholder="e.g. Rahul Kumar">
-            </div>
-
-            <div class="form-group booking-field">
-                <label for="appointmentDate">Appointment Date:</label>
-                <input type="date" id="appointmentDate" name="appointmentDate">
-            </div>
-
-            <div class="form-group booking-field">
-                <label for="timeSlot">⏱️ 30-Minute Time Slot (Max 3 Patients):</label>
-                <select id="timeSlot" name="timeSlot" required>
-                    <option value="">-- Select 30-Minute Time Window --</option>
-                    <optgroup label="Morning Session">
-                        <option value="09:00 AM - 09:30 AM">09:00 AM - 09:30 AM</option>
-                        <option value="09:30 AM - 10:00 AM">09:30 AM - 10:00 AM</option>
-                        <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
-                        <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
-                        <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
-                        <option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
-                    </optgroup>
-                    <optgroup label="Afternoon / Evening Session">
-                        <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
-                        <option value="02:30 PM - 03:00 PM">02:30 PM - 03:00 PM</option>
-                        <option value="03:00 PM - 03:30 PM">03:00 PM - 03:30 PM</option>
-                        <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
-                        <option value="04:00 PM - 04:30 PM">04:00 PM - 04:30 PM</option>
-                        <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
-                    </optgroup>
-                </select>
-                <div class="slot-badge">ℹ️ <strong>Capacity Rule:</strong> Up to 3 patients are allotted per 30-min window (~10 mins per consultation). Sequential queue tokens are issued upon booking.</div>
-            </div>
-
-            <input type="submit" value="Confirm Appointment">
-        </form>
-
-        <div class="nav-links-footer">
-            <a href="dashboard.html">← Return to Dashboard</a>
-            <a href="Prescription.html">View Prescriptions →</a>
+        <div class="nav-actions">
+            <a href="dashboard.html" class="btn-link">Dashboard</a>
+            <a href="Prescription.html" class="btn-header">Prescriptions</a>
         </div>
-    </div>
+    </nav>
+
+    <!-- MAIN FORM -->
+    <main class="main-wrapper">
+        <div class="appointment-card">
+            <div class="card-header">
+                <div class="badge-pill">Smart Queue System</div>
+                <h1>Manage Appointments</h1>
+                <p>Reserve 30-minute consultation windows with automated sequential tokens</p>
+            </div>
+
+            <form action="ManageAppointmentServlet" method="post" onsubmit="return validateForm();">
+                <div class="action-tabs">
+                    <label class="tab-btn active">
+                        <input type="radio" name="action" value="book" checked onclick="updateFormFields()">
+                        <span>📅 Book Slot</span>
+                    </label>
+                    <label class="tab-btn">
+                        <input type="radio" name="action" value="update" onclick="updateFormFields()">
+                        <span>✏️ Reschedule</span>
+                    </label>
+                    <label class="tab-btn">
+                        <input type="radio" name="action" value="cancel" onclick="updateFormFields()">
+                        <span>❌ Cancel</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="appointmentId">Appointment Reference ID:</label>
+                    <input type="text" id="appointmentId" name="appointmentId">
+                </div>
+
+                <div class="form-group booking-field">
+                    <label for="doctorName">👨‍⚕️ Select Medical Specialist:</label>
+                    <select id="doctorName" name="doctorName" required>
+                        <option value="">-- Choose Doctor by Specialty --</option>
+                        <option value="Dr. A. K. Sharma">Dr. A. K. Sharma (Cardiology)</option>
+                        <option value="Dr. Priya Verma">Dr. Priya Verma (Dermatology)</option>
+                        <option value="Dr. Rajesh Mehta">Dr. Rajesh Mehta (Orthopedics)</option>
+                    </select>
+                </div>
+
+                <div class="form-group booking-field">
+                    <label for="patientId">Patient Phone Number / Account ID:</label>
+                    <input type="text" id="patientId" name="patientId" placeholder="e.g. 9876543210 or P-501">
+                </div>
+
+                <div class="form-group booking-field">
+                    <label for="patientName">Patient Full Name:</label>
+                    <input type="text" id="patientName" name="patientName" placeholder="e.g. Rahul Kumar">
+                </div>
+
+                <div class="form-group booking-field">
+                    <label for="appointmentDate">Appointment Date:</label>
+                    <input type="date" id="appointmentDate" name="appointmentDate">
+                </div>
+
+                <div class="form-group booking-field">
+                    <label for="timeSlot">⏱️ 30-Minute Consultation Window (Max 3 Patients):</label>
+                    <select id="timeSlot" name="timeSlot" required>
+                        <option value="">-- Select 30-Minute Time Window --</option>
+                        <optgroup label="Morning Shift">
+                            <option value="09:00 AM - 09:30 AM">09:00 AM - 09:30 AM</option>
+                            <option value="09:30 AM - 10:00 AM">09:30 AM - 10:00 AM</option>
+                            <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+                            <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+                            <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
+                            <option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
+                        </optgroup>
+                        <optgroup label="Afternoon / Evening Shift">
+                            <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
+                            <option value="02:30 PM - 03:00 PM">02:30 PM - 03:00 PM</option>
+                            <option value="03:00 PM - 03:30 PM">03:00 PM - 03:30 PM</option>
+                            <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
+                            <option value="04:00 PM - 04:30 PM">04:00 PM - 04:30 PM</option>
+                            <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
+                        </optgroup>
+                    </select>
+                    <div class="capacity-alert">
+                        ⚡ <strong>Slot Capacity Rule:</strong> Strictly limited to 3 patients per 30-minute block (~10 minutes per patient). Your sequential token (e.g. Token #1, #2, or #3) will be printed upon confirmation.
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Submit Appointment Request</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </form>
+
+            <div class="footer-nav">
+                <a href="dashboard.html">← Back to Dashboard</a>
+                <a href="DoctorServlet?action=view">Browse Doctor Directory →</a>
+            </div>
+        </div>
+    </main>
+
 </body>
 </html>
