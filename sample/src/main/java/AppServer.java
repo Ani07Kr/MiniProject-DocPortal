@@ -10,20 +10,29 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 
 public class AppServer {
-    private static final int PORT = 8080;
     private static final Path WEBAPP_DIR = Paths.get("sample/src/main/webapp");
     private static final Map<String, SimpleHttpSession> sessions = new ConcurrentHashMap<>();
 
+    private static int getPort() {
+        String envPort = System.getenv("PORT");
+        if (envPort != null && !envPort.trim().isEmpty()) {
+            try {
+                return Integer.parseInt(envPort.trim());
+            } catch (NumberFormatException ignored) {}
+        }
+        return 8080;
+    }
+
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        int port = getPort();
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/", new RootHandler());
         server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
         server.start();
 
         System.out.println("=======================================================");
-        System.out.println("🚀 DocPortal Local Server is RUNNING on Port " + PORT + "!");
-        System.out.println("👉 Open in your browser: http://localhost:" + PORT + "/sample/Welcome.html");
-        System.out.println("   (or http://localhost:" + PORT + "/Welcome.html)");
+        System.out.println("🚀 DocPortal Server is RUNNING on Port " + port + "!");
+        System.out.println("👉 URL: http://localhost:" + port + "/Welcome.html");
         System.out.println("=======================================================");
     }
 
